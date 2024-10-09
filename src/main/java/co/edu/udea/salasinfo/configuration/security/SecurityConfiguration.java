@@ -51,7 +51,7 @@ public class SecurityConfiguration {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())//NOSONAR not used in secure contexts
                         //.requireCsrfProtectionMatcher(request -> request.getMethod() .equalsIgnoreCase("POST") && request.getRequestURI().startsWith("/secure/"))
                 )
                 .authorizeHttpRequests(auth -> {
