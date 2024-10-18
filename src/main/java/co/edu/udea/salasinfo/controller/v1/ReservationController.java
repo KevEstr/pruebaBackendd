@@ -120,7 +120,7 @@ public class ReservationController {
                     description = RestConstants.SWAGGER_RESERVATION_NOT_FOUND,
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     })
-    @PutMapping("/{id}/accept")
+    @PatchMapping("/{id}/accept")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ReservationResponse> acceptReservation(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.updateState(id, RStatus.ACCEPTED));
@@ -135,7 +135,7 @@ public class ReservationController {
                     description = RestConstants.SWAGGER_RESERVATION_NOT_FOUND,
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     })
-    @PutMapping("/{id}/reject")
+    @PatchMapping("/{id}/reject")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ReservationResponse> rejectReservation(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.updateState(id, RStatus.REJECTED));

@@ -48,7 +48,7 @@ class AuthenticationControllerTest {
     void testLogin_Success() throws Exception {
         // Arrange
         AuthenticationRequest request = new AuthenticationRequest("test@example.com", "password123");
-        AuthenticationResponse response = new AuthenticationResponse("token123", RoleName.USER);
+        AuthenticationResponse response = new AuthenticationResponse("token123", RoleName.USER, "id");
 
         when(authenticationService.authenticate(any(AuthenticationRequest.class))).thenReturn(response);
 

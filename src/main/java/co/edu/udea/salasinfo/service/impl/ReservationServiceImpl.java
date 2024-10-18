@@ -125,7 +125,7 @@ public class ReservationServiceImpl implements ReservationService {
         List<ReservationRequest> reservationRequests = new ArrayList<>();
         classReservation.getSessions().forEach(session -> {
 
-            LocalDateTime startAt = classReservation.getSemesterStartAt()
+            LocalDateTime startAt = classReservation.getSemesterStartsAt()
                     .atTime(session.getStartsAt())
                     .with(TemporalAdjusters.next(mapWeekDay(session.getDay())));
 

@@ -53,12 +53,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         claims.put(ROLE, user.getAuthorities().stream().toList().get(0).getAuthority());
         String token = jwtService.generateToken(claims, user);
 
-        return AuthenticationResponse.builder().token(token).role(user.getRole().getRoleName()).build();
+        return AuthenticationResponse.builder()
+                .token(token)
+                .role(user.getRole().getRoleName())
+                .id(user.getId())
+                .build();
     }
 
     @Override
     public RegisterResponse register(RegisterRequest request) {
-        if(userRepository.existsByEmail(request.getEmail()))
+        if (userRepository.existsByEmail(request.getEmail()))
             throw new EmailAlreadyRegisteredException(request.getEmail());
         User user = registerRequestMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));

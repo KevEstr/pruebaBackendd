@@ -32,7 +32,7 @@ public class ClassReservationRequest {
     private Long roomId;
 
     @NotNull(message = Constants.SEMESTER_STARTS_AT_FIELD_NOT_NULL_MESSAGE)
-    private LocalDate semesterStartAt;
+    private LocalDate semesterStartsAt;
 
     @NotNull(message = Constants.SEMESTER_ENDS_AT_FIELD_NOT_NULL_MESSAGE)
     private LocalDate semesterEndsAt;

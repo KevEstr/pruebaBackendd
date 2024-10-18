@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,25 +94,15 @@ public class RoomController {
         return ResponseEntity.ok(roomService.updateRoom(id, room));
     }
 
-    @Operation(summary = RestConstants.SWAGGER_FIND_FREE_ROOM_NOW_SUMMARY)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = RestConstants.CODE_OK, description = RestConstants.SWAGGER_FOUND_FREE_ROOMS,
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = RoomResponse.class))))
-    })
-    @GetMapping("/free")
-    public ResponseEntity<List<RoomResponse>> findFree() {
-        return ResponseEntity.ok(roomService.findFreeAt(LocalDateTime.now()));
-    }
-
     @Operation(summary = RestConstants.SWAGGER_FIND_FREE_ROOM_AT_SUMMARY)
     @ApiResponses(value = {
             @ApiResponse(responseCode = RestConstants.CODE_OK, description = RestConstants.SWAGGER_FOUND_FREE_ROOMS,
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = RoomResponse.class))))
     })
-    @GetMapping("/free/{date}")
-    public ResponseEntity<List<RoomResponse>> findFree(@PathVariable LocalDateTime date) {
+    @GetMapping("/free")
+    public ResponseEntity<List<RoomResponse>> findFree(@Nullable LocalDateTime date) {
+        if(date == null) date = LocalDateTime.now();
         return ResponseEntity.ok(roomService.findFreeAt(date));
     }
 
