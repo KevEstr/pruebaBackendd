@@ -10,6 +10,7 @@ import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Generated
+@Configuration
 @RequiredArgsConstructor
 public class DataInitializer {
 
@@ -34,6 +36,7 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initDatabase() {
         return args -> {
+            if(roleRepository.existsById(1L)) return;
             // Inserting roles
             Role roleAdmin = new Role(null, RoleName.ADMIN);
             Role roleUser = new Role(null, RoleName.USER);
@@ -42,7 +45,7 @@ public class DataInitializer {
             roleRepository.saveAll(Arrays.asList(roleAdmin, roleUser, roleProfessor, roleMonitor));
 
             // Inserting customers
-            User user1 = new User(null, "Juan", "Doe", "juan.doe@example.com", passwordEncoder.encode(PASS), roleUser); //NOSONAR not used in secure contexts
+            User user1 = new User(null, "Juan", "Doe", "juan.doe@example.com", passwordEncoder.encode(PASS), roleAdmin); //NOSONAR not used in secure contexts
             User user2 = new User(null, "Ana", "Smith", "ana.smith@example.com", passwordEncoder.encode(PASS), roleProfessor); //NOSONAR not used in secure contexts
             User user3 = new User(null, "Roberto", "Johnson", "roberto.johnson@example.com", passwordEncoder.encode(PASS), roleMonitor); //NOSONAR not used in secure contexts
             userRepository.saveAll(Arrays.asList(user1, user2, user3));

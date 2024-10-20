@@ -188,7 +188,7 @@ class ReservationServiceImplTest {
         ClassReservationRequest classRequest = new ClassReservationRequest();
         classRequest.setActivityName("Class");
         classRequest.setActivityDescription("Weekly Class");
-        classRequest.setSemesterStartAt(LocalDate.now());
+        classRequest.setSemesterStartsAt(LocalDate.now());
         classRequest.setSemesterEndsAt(LocalDate.now().plusMonths(2));
 
         // Set up sessions
