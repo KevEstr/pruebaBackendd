@@ -209,7 +209,7 @@ class ReservationControllerTest {
         when(reservationService.updateState(1L, RStatus.ACCEPTED)).thenReturn(response);
 
         // Act & Assert
-        mockMvc.perform(put("/v1/reservations/1/accept")
+        mockMvc.perform(patch("/v1/reservations/1/accept")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -226,7 +226,7 @@ class ReservationControllerTest {
         when(reservationService.updateState(2L, RStatus.REJECTED)).thenReturn(response);
 
         // Act & Assert
-        mockMvc.perform(put("/v1/reservations/2/reject")
+        mockMvc.perform(patch("/v1/reservations/2/reject")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))

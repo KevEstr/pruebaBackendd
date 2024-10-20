@@ -179,7 +179,7 @@ class RoomControllerTest {
 
         when(roomService.findFreeAt(any(LocalDateTime.class))).thenReturn(roomList);
 
-        mockMvc.perform(get("/v1/rooms/free/2023-10-10T10:00:00")
+        mockMvc.perform(get("/v1/rooms/free?date=2023-10-10T10:00:00")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(roomResponse.getId()))

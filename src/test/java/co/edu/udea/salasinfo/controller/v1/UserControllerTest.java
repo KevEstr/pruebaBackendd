@@ -57,7 +57,7 @@ class UserControllerTest {
 
         when(userService.findAll()).thenReturn(users);
 
-        mockMvc.perform(get("/v1/user")
+        mockMvc.perform(get("/v1/users")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(userResponse.getId()))
@@ -72,7 +72,7 @@ class UserControllerTest {
 
         when(userService.findById("1")).thenReturn(userResponse);
 
-        mockMvc.perform(get("/v1/user/1")
+        mockMvc.perform(get("/v1/users/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userResponse.getId()))
@@ -85,7 +85,7 @@ class UserControllerTest {
     void getUserById_notFound() throws Exception {
         when(userService.findById("1")).thenThrow(new EntityNotFoundException(User.class.getSimpleName(), "1"));
 
-        mockMvc.perform(get("/v1/user/1")
+        mockMvc.perform(get("/v1/users/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Entity of 'User' type searched with '1' not found"));
@@ -100,7 +100,7 @@ class UserControllerTest {
 
         when(userService.updateRole("1", roleRequest.getRoleName())).thenReturn(updatedUser);
 
-        mockMvc.perform(put("/v1/user/1/role")
+        mockMvc.perform(put("/v1/users/1/role")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(roleRequest)))
                 .andExpect(status().isOk());
@@ -114,7 +114,7 @@ class UserControllerTest {
 
         when(userService.updateRole("1", roleRequest.getRoleName())).thenThrow(new EntityNotFoundException(User.class.getSimpleName(), "1"));
 
-        mockMvc.perform(put("/v1/user/1/role")
+        mockMvc.perform(put("/v1/users/1/role")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(roleRequest)))
                 .andExpect(status().isNotFound());
