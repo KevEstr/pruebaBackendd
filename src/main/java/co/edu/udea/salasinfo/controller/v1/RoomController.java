@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,18 +35,20 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @Operation(summary = RestConstants.SWAGGER_FIND_ALL_ROOMS_SUMMARY)
+    @Operation(summary = RestConstants.SWAGGER_FIND_ALL_ROOMS_SUMMARY,
+            security = @SecurityRequirement(name = RestConstants.SWAGGER_SECURITY_TYPE))
     @ApiResponses(value = {
             @ApiResponse(responseCode = RestConstants.CODE_OK, description = RestConstants.SWAGGER_FOUND_ROOMS,
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = RoomResponse.class))))
     })
     @GetMapping
-    public ResponseEntity<List<RoomResponse>> findAll(@Valid RoomFilter filter) {
+    public ResponseEntity<List<RoomResponse>> findAll(@Nullable @Valid RoomFilter filter) {
         return ResponseEntity.ok(roomService.findAll(filter));
     }
 
-    @Operation(summary = RestConstants.SWAGGER_CREATE_ROOM_SUMMARY)
+    @Operation(summary = RestConstants.SWAGGER_CREATE_ROOM_SUMMARY,
+            security = @SecurityRequirement(name = RestConstants.SWAGGER_SECURITY_TYPE))
     @ApiResponses(value = {
             @ApiResponse(responseCode = RestConstants.CODE_CREATED, description = "Room created successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = RoomResponse.class)))
@@ -102,7 +105,7 @@ public class RoomController {
     })
     @GetMapping("/free")
     public ResponseEntity<List<RoomResponse>> findFree(@Nullable LocalDateTime date) {
-        if(date == null) date = LocalDateTime.now();
+        if (date == null) date = LocalDateTime.now();
         return ResponseEntity.ok(roomService.findFreeAt(date));
     }
 

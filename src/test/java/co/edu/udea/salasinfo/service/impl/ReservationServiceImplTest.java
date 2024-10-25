@@ -11,6 +11,7 @@ import co.edu.udea.salasinfo.model.ReservationState;
 import co.edu.udea.salasinfo.persistence.ReservationDAO;
 import co.edu.udea.salasinfo.persistence.ReservationStateDAO;
 import co.edu.udea.salasinfo.utils.enums.RStatus;
+import co.edu.udea.salasinfo.utils.enums.ReservationType;
 import co.edu.udea.salasinfo.utils.enums.WeekDay;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -106,13 +107,17 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void save_CreatesNewReservation() {
+    void saveSingleTimeReservation_CreatesOnceReservation() {
         // Arrange
         ReservationRequest request = new ReservationRequest();
-        request.setActivityName("Meeting");
-        request.setActivityDescription("Team Meeting");
-        request.setStartsAt(LocalDateTime.now().plusDays(1));
-        request.setEndsAt(LocalDateTime.now().plusDays(1).plusHours(1));
+        request.setActivityName("Single Meeting");
+        request.setActivityDescription("One-time meeting");
+        request.setDate(LocalDate.now().plusDays(1));
+        request.setStartsAt(LocalTime.now());
+        request.setEndsAt(LocalTime.now().plusHours(1));
+
+        mockReservation = new Reservation();
+        mockReservation.setType(ReservationType.ONCE);
         when(reservationRequestMapper.toEntity(request)).thenReturn(mockReservation);
         when(reservationDAO.existsByStartsAtAndRoomId(any(), any())).thenReturn(false);
         when(reservationStateDAO.findByState(RStatus.PENDING)).thenReturn(new ReservationState());
@@ -120,12 +125,41 @@ class ReservationServiceImplTest {
         when(reservationResponseMapper.toResponse(any())).thenReturn(mockReservationResponse);
 
         // Act
-        ReservationResponse response = reservationService.save(request);
+        ReservationResponse response = reservationService.saveSingleTimeReservation(request);
 
         // Assert
         assertNotNull(response);
         assertEquals(mockReservationResponse, response);
-        verify(reservationDAO).save(any());
+        assertEquals(ReservationType.ONCE, mockReservation.getType());
+        verify(reservationDAO).save(mockReservation);
+    }
+
+    @Test
+    void saveFrequentReservation_CreatesWeeklyReservation() {
+        // Arrange
+        ReservationRequest request = new ReservationRequest();
+        request.setActivityName("Weekly Meeting");
+        request.setActivityDescription("Recurring weekly meeting");
+        request.setDate(LocalDate.now().plusDays(1));
+        request.setStartsAt(LocalTime.now());
+        request.setEndsAt(LocalTime.now().plusHours(1));
+
+        mockReservation = new Reservation();
+        mockReservation.setType(ReservationType.WEEKLY);
+        when(reservationRequestMapper.toEntity(request)).thenReturn(mockReservation);
+        when(reservationDAO.existsByStartsAtAndRoomId(any(), any())).thenReturn(false);
+        when(reservationStateDAO.findByState(RStatus.PENDING)).thenReturn(new ReservationState());
+        when(reservationDAO.save(any())).thenReturn(mockReservation);
+        when(reservationResponseMapper.toResponse(any())).thenReturn(mockReservationResponse);
+
+        // Act
+        ReservationResponse response = reservationService.saveFrequentReservation(request);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(mockReservationResponse, response);
+        assertEquals(ReservationType.WEEKLY, mockReservation.getType());
+        verify(reservationDAO).save(mockReservation);
     }
 
     @Test
@@ -150,8 +184,9 @@ class ReservationServiceImplTest {
         ReservationRequest request = new ReservationRequest();
         request.setActivityName("Updated Meeting");
         request.setActivityDescription("Updated Description");
-        request.setStartsAt(LocalDateTime.now().plusDays(2));
-        request.setEndsAt(LocalDateTime.now().plusDays(2).plusHours(1));
+        request.setDate(LocalDate.now().plusDays(4));
+        request.setStartsAt(LocalTime.now());
+        request.setEndsAt(LocalTime.now().plusHours(2));
 
         when(reservationDAO.findById(anyLong())).thenReturn(mockReservation);
         when(reservationRequestMapper.toEntity(request)).thenReturn(mockReservation);

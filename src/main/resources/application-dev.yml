@@ -38,3 +38,12 @@ allowed-origins:
     http://localhost:3000/,
     http://localhost:5173/,
     https://arquimedes.ueda.edu.co/,
+
+public-endpoints:
+    /swagger-ui.html,
+    /webjars/**,
+    /v3/api-docs/**,
+    /swagger-ui/**,
+    static/**,
+    /v1/auth/*,
+    /v1/home

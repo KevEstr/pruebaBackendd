@@ -12,7 +12,8 @@ public interface ReservationService {
 
     ReservationResponse findById(Long id);
 
-    ReservationResponse save(ReservationRequest reservation);
+    public ReservationResponse saveSingleTimeReservation(ReservationRequest reservation);
+    public ReservationResponse saveFrequentReservation(ReservationRequest reservation);
 
     List<ReservationResponse> saveClass(ClassReservationRequest reservation);
 

@@ -57,14 +57,14 @@ class ReservationControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void testSaveReservation_Success() throws Exception {
+    void testSaveSingleTimeReservationReservation_Success() throws Exception {
         // Arrange
         ReservationRequest request = new ReservationRequest(
                 "Yoga Class",
                 "Relaxing yoga session",
-                LocalDateTime.now().plusDays(1),
-                LocalDateTime.now().plusDays(2),
-                ReservationType.WEEKLY,
+                LocalDate.now().plusDays(1),
+                LocalTime.now().plusHours(2),
+                LocalTime.now().plusHours(4),
                 "user123",
                 1L
         );
@@ -72,10 +72,10 @@ class ReservationControllerTest {
                 LocalDateTime.now().plusDays(20), LocalDateTime.now().plusDays(20),
                 ReservationType.WEEKLY, null, null, null);
 
-        when(reservationService.save(any(ReservationRequest.class))).thenReturn(response);
+        when(reservationService.saveSingleTimeReservation(any(ReservationRequest.class))).thenReturn(response);
 
         // Act & Assert
-        mockMvc.perform(post("/v1/reservations")
+        mockMvc.perform(post("/v1/reservations/once")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -84,14 +84,15 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.activityName").value("Yoga Class"));
     }
 
+
     @Test
     @WithMockUser(roles = "ADMIN")
-    void testSaveReservation_BadRequest() throws Exception {
+    void testSaveSingleTimeReservationReservation_BadRequest() throws Exception {
         // Arrange
         ReservationRequest request = new ReservationRequest(null, null, null, null, null, null, null);
 
         // Act & Assert
-        mockMvc.perform(post("/v1/reservations")
+        mockMvc.perform(post("/v1/reservations/once")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());

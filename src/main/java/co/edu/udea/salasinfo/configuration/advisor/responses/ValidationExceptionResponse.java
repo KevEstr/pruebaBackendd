@@ -22,7 +22,7 @@ public class ValidationExceptionResponse {
     private HttpStatus status;
     private String message;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATETIME_FORMAT)
     private LocalDateTime timestamp;
     private List<String> errors;
 }
