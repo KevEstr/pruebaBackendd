@@ -43,16 +43,28 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationResponseMapper.toResponse(reservationDAO.findById(roomId));
     }
 
+    private ReservationResponse save(Reservation reservation) {
+        if (reservationDAO.existsByStartsAtAndRoomId(reservation.getStartsAt(), reservation.getRoom()))
+            throw new RoomOccupiedAtException(reservation.getRoom().getId().toString(), reservation.getStartsAt());
+
+        reservation.setReservationState(reservationStateDAO.findByState(RStatus.PENDING));
+        Reservation result = reservationDAO.save(reservation);
+        return reservationResponseMapper.toResponse(result);
+    }
+
     @Transactional
     @Override
-    public ReservationResponse save(ReservationRequest reservation) {
+    public ReservationResponse saveSingleTimeReservation(ReservationRequest reservation) {
         Reservation entity = reservationRequestMapper.toEntity(reservation);
-        if (reservationDAO.existsByStartsAtAndRoomId(entity.getStartsAt(), entity.getRoom()))
-            throw new RoomOccupiedAtException(entity.getRoom().getId().toString(), entity.getStartsAt());
+        entity.setType(ReservationType.ONCE);
+        return save(entity);
+    }
 
-        entity.setReservationState(reservationStateDAO.findByState(RStatus.PENDING));
-        Reservation result = reservationDAO.save(entity);
-        return reservationResponseMapper.toResponse(result);
+    @Override
+    public ReservationResponse saveFrequentReservation(ReservationRequest reservation) {
+        Reservation entity = reservationRequestMapper.toEntity(reservation);
+        entity.setType(ReservationType.WEEKLY);
+        return save(entity);
     }
 
     @Transactional
@@ -131,9 +143,9 @@ public class ReservationServiceImpl implements ReservationService {
 
             while (startAt.isBefore(classReservation.getSemesterEndsAt().atStartOfDay())) {
                 ReservationRequest reservationRequest = reservationRequestMapper.toRequest(classReservation);
-                reservationRequest.setStartsAt(startAt);
-                reservationRequest.setEndsAt(startAt.toLocalDate().atTime(session.getEndsAt()));
-                reservationRequest.setType(ReservationType.WEEKLY);
+                reservationRequest.setDate(startAt.toLocalDate());
+                reservationRequest.setStartsAt(session.getStartsAt());
+                reservationRequest.setEndsAt(session.getEndsAt());
                 reservationRequests.add(reservationRequest);
                 startAt = startAt.plusWeeks(1L);
             }

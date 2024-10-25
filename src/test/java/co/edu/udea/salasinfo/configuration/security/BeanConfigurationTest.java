@@ -1,7 +1,6 @@
 package co.edu.udea.salasinfo.configuration.security;
 
 import co.edu.udea.salasinfo.exceptions.EntityNotFoundException;
-import co.edu.udea.salasinfo.model.User;
 import co.edu.udea.salasinfo.repository.UserRepository;
 import co.edu.udea.salasinfo.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;

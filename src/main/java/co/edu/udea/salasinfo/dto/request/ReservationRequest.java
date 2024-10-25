@@ -4,12 +4,15 @@ import co.edu.udea.salasinfo.utils.Constants;
 import co.edu.udea.salasinfo.utils.enums.ReservationType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
@@ -24,20 +27,23 @@ public class ReservationRequest {
     @NotNull(message = Constants.ACTIVITY_DESCRIPTION_FIELD_NOT_NULL_MESSAGE)
     private String activityDescription;
 
-    @NotNull(message = Constants.STARTS_AT_FIELD_NOT_NULL_MESSAGE)
-    @Future(message = Constants.STARTS_AT_FIELD_NOT_PAST_MESSAGE)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @NotNull(message = Constants.DATE_FIELD_NOT_NULL_MESSAGE)
+    @Future(message = Constants.DATE_FIELD_NOT_PAST_MESSAGE)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_FORMAT)
-    private LocalDateTime startsAt;
+    private LocalDate date;
+
+    @NotNull(message = Constants.STARTS_AT_FIELD_NOT_NULL_MESSAGE)
+    @Schema(type = "String", pattern = Constants.HOUR_FORMAT)
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.HOUR_FORMAT)
+    private LocalTime startsAt;
 
     @NotNull(message = Constants.ENDS_AT_FIELD_NOT_NULL_MESSAGE)
-    @Future(message = Constants.ENDS_AT_FIELD_NOT_PAST_MESSAGE)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_FORMAT)
-    private LocalDateTime endsAt;
-
-    @NotNull(message = Constants.TYPE_FIELD_NOT_NULL_MESSAGE)
-    private ReservationType type;
+    @Schema(type = "String", pattern = Constants.HOUR_FORMAT)
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.HOUR_FORMAT)
+    private LocalTime endsAt;
 
     @NotNull(message = Constants.USER_ID_FIELD_NOT_NULL_MESSAGE)
     private String userId;
