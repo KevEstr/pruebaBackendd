@@ -37,7 +37,8 @@ jwt:
 allowed-origins:
     http://localhost:3000/,
     http://localhost:5173/,
-    https://arquimedes.ueda.edu.co/,
+    https://arquimedes.udea.edu.co/,
+    https://arquimedes.udea.edu.co/salasinfo,
 
 public-endpoints:
     /swagger-ui.html,
