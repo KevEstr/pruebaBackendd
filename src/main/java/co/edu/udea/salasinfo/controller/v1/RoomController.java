@@ -3,6 +3,7 @@ package co.edu.udea.salasinfo.controller.v1;
 import co.edu.udea.salasinfo.dto.request.RoomRequest;
 import co.edu.udea.salasinfo.dto.request.filter.RoomFilter;
 import co.edu.udea.salasinfo.configuration.advisor.responses.ExceptionResponse;
+import co.edu.udea.salasinfo.dto.response.room.FreeScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
@@ -19,11 +20,13 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -121,4 +124,15 @@ public class RoomController {
     public ResponseEntity<List<RoomScheduleResponse>> findSchedule(@PathVariable Long id) {
         return ResponseEntity.ok(roomService.findRoomSchedule(id));
     }
+
+    @GetMapping("/{id}/freeSchedule")
+    public ResponseEntity<List<FreeScheduleResponse>> findFreeRoomSchedule(
+            @PathVariable Long id,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedDate) {
+        System.out.println("Fecha seleccionada: "+selectedDate);
+        List<FreeScheduleResponse> freeSchedule = roomService.findFreeRoomSchedule(id, selectedDate);
+
+        return ResponseEntity.ok(freeSchedule);
+    }
+
 }

@@ -74,6 +74,7 @@ public class ReservationServiceImpl implements ReservationService {
         reservations.forEach(reservation -> {
             if (reservationDAO.existsByStartsAtAndRoomId(reservation.getStartsAt(), reservation.getRoom()))
                 throw new RoomOccupiedAtException(reservation.getRoom().getId().toString(), reservation.getStartsAt());
+            reservation.setType(ReservationType.WEEKLY);
         });
         return reservationResponseMapper.toResponses(reservationDAO.saveAll(reservations));
     }

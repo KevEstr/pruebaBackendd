@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import co.edu.udea.salasinfo.dto.request.RoomRequest;
 import co.edu.udea.salasinfo.dto.request.filter.RoomFilter;
+import co.edu.udea.salasinfo.dto.response.room.FreeScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
@@ -28,9 +29,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
 class RoomServiceImplTest {
@@ -217,5 +221,56 @@ class RoomServiceImplTest {
         // Assert
         assertNotNull(schedule);
         assertEquals(1, schedule.size());
+    }
+
+    @Test
+    void findFreeRoomSchedule_ReturnsFreeSchedule() {
+        // Arrange
+        Long roomId = 123L;
+        LocalDate selectedDate = LocalDate.now();
+        Room mockRoom = new Room();
+        mockRoom.setId(roomId);
+
+        Reservation reservation1 = new Reservation();
+        reservation1.setStartsAt(LocalDateTime.of(selectedDate, LocalTime.of(10, 0)));
+        reservation1.setEndsAt(LocalDateTime.of(selectedDate, LocalTime.of(12, 0)));
+        reservation1.setReservationState(new ReservationState(1L, RStatus.ACCEPTED));
+
+        Reservation reservation2 = new Reservation();
+        reservation2.setStartsAt(LocalDateTime.of(selectedDate, LocalTime.of(14, 0)));
+        reservation2.setEndsAt(LocalDateTime.of(selectedDate, LocalTime.of(15, 0)));
+        reservation2.setReservationState(new ReservationState(1L, RStatus.ACCEPTED));
+
+        mockRoom.setReservations(List.of(reservation1, reservation2));
+
+        when(roomDAO.findById(roomId)).thenReturn(mockRoom);
+
+        // Act
+        List<FreeScheduleResponse> freeSchedules = roomService.findFreeRoomSchedule(roomId, selectedDate);
+
+        // Assert
+        assertNotNull(freeSchedules);
+        List<LocalTime> expectedFreeHours = List.of(
+                LocalTime.of(6, 0),
+                LocalTime.of(7, 0),
+                LocalTime.of(8, 0),
+                LocalTime.of(9, 0),
+                LocalTime.of(12, 0),
+                LocalTime.of(13, 0),
+                LocalTime.of(15, 0),
+                LocalTime.of(16, 0),
+                LocalTime.of(17, 0),
+                LocalTime.of(18, 0),
+                LocalTime.of(19, 0),
+                LocalTime.of(20, 0),
+                LocalTime.of(21, 0)
+        );
+
+        List<LocalTime> actualFreeHours = freeSchedules.stream()
+                .map(FreeScheduleResponse::getHour)
+                .collect(Collectors.toList());
+
+        assertEquals(expectedFreeHours, actualFreeHours);
+        verify(roomDAO).findById(roomId);
     }
 }
