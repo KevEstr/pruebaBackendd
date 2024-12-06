@@ -1,11 +1,15 @@
 package co.edu.udea.salasinfo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -26,15 +30,11 @@ public class Application implements Serializable {
     @Column(name = "applicationName")
     private String name;
 
-    @Column(name = "version")
-    private String version;
-
     @JsonIgnore
-    @ManyToMany(
-            targetEntity = Room.class,
-            mappedBy = "software",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
-    )
-    private List<Room> rooms;
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RoomApplication> roomApplications;
+
+
+
+
 }

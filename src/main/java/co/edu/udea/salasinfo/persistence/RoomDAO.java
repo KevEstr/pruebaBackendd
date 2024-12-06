@@ -11,4 +11,5 @@ public interface RoomDAO{
     List<Room> findAll(@Nullable RoomFilter filter);
     Room save(Room room);
     void deleteById(Long id);
+    boolean existsById(Long id);
 }

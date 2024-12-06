@@ -2,6 +2,7 @@ package co.edu.udea.salasinfo.persistence.jpa;
 
 import co.edu.udea.salasinfo.exceptions.EntityNotFoundException;
 import co.edu.udea.salasinfo.model.Room;
+import co.edu.udea.salasinfo.persistence.RoomDAO;
 import co.edu.udea.salasinfo.repository.RoomRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,9 @@ class RoomJPATest {
     private RoomRepository roomRepository;
 
     private Room room;
+
+    @Mock
+    private RoomDAO roomDAO;
 
     @BeforeEach
     void setUp() {
@@ -76,4 +80,34 @@ class RoomJPATest {
 
         verify(roomRepository).deleteById(1L);
     }
+
+    @Test
+    void existsById_ReturnsTrue_WhenRoomExists() {
+        // Arrange
+        Long roomId = 1L;
+        when(roomRepository.existsById(roomId)).thenReturn(true);
+
+        // Act
+        boolean exists = roomRepository.existsById(roomId);
+
+        // Assert
+        assertTrue(exists);
+        verify(roomRepository, times(1)).existsById(roomId);
+    }
+
+    @Test
+    void existsById_ReturnsFalse_WhenRoomDoesNotExist() {
+        // Arrange
+        Long roomId = 2L;
+        when(roomRepository.existsById(roomId)).thenReturn(false);
+
+        // Act
+        boolean exists = roomRepository.existsById(roomId);
+
+        // Assert
+        assertFalse(exists);
+        verify(roomRepository, times(1)).existsById(roomId);
+    }
+
+
 }

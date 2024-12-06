@@ -2,6 +2,7 @@ package co.edu.udea.salasinfo.persistence.jpa;
 
 import co.edu.udea.salasinfo.exceptions.EntityNotFoundException;
 import co.edu.udea.salasinfo.model.Restriction;
+import co.edu.udea.salasinfo.persistence.RestrictionDAO;
 import co.edu.udea.salasinfo.repository.RestrictionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,12 +29,15 @@ class RestrictionJPATest {
 
     private Restriction restriction;
 
+    @Mock
+    private RestrictionDAO restrictionDAO;
+
     @BeforeEach
     public void setUp() {
         restriction = Restriction.builder()
                 .id(1L)
                 .description("No food allowed")
-                .rooms(Collections.emptyList()) // Assuming no rooms initially
+                .roomRestrictions(Collections.emptyList()) // Assuming no rooms initially
                 .build();
     }
 
@@ -128,4 +132,33 @@ class RestrictionJPATest {
         // Assert
         verify(restrictionRepository).deleteById(1L);
     }
+
+    @Test
+    void existsByDescription_ShouldReturnTrue_WhenDescriptionExists() {
+        // Arrange
+        String description = "No food allowed";
+        when(restrictionRepository.existsByDescription(description)).thenReturn(true);
+
+        // Act
+        boolean result = restrictionRepository.existsByDescription(description);
+
+        // Assert
+        assertTrue(result);
+        verify(restrictionRepository, times(1)).existsByDescription(description);
+    }
+
+    @Test
+    void existsByDescription_ShouldReturnFalse_WhenDescriptionDoesNotExist() {
+        // Arrange
+        String description = "No pets allowed";
+        when(restrictionRepository.existsByDescription(description)).thenReturn(false);
+
+        // Act
+        boolean result = restrictionRepository.existsByDescription(description);
+
+        // Assert
+        assertFalse(result);
+        verify(restrictionRepository, times(1)).existsByDescription(description);
+    }
+
 }

@@ -7,27 +7,29 @@ import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
 import co.edu.udea.salasinfo.mapper.request.RoomRequestMapper;
+import co.edu.udea.salasinfo.mapper.response.RoomImplementResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomScheduleResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.SpecificRoomResponseMapper;
-import co.edu.udea.salasinfo.model.Reservation;
-import co.edu.udea.salasinfo.persistence.ReservationDAO;
-import co.edu.udea.salasinfo.persistence.RoomDAO;
-import co.edu.udea.salasinfo.model.Room;
+import co.edu.udea.salasinfo.model.*;
+import co.edu.udea.salasinfo.persistence.*;
 import co.edu.udea.salasinfo.service.RoomService;
 import co.edu.udea.salasinfo.utils.enums.RStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * It's the rooms data accessor, which saves and retrieves rooms
@@ -42,6 +44,15 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRequestMapper roomRequestMapper;
     private final SpecificRoomResponseMapper specificRoomResponseMapper;
     private final RoomScheduleResponseMapper roomScheduleResponseMapper;
+    private final ImplementDAO implementDAO;
+    private final ApplicationDAO applicationDAO;
+    private final RestrictionDAO restrictionDAO;
+    private final RoomImplementDAO roomImplementDAO;
+    private final RoomApplicationDAO roomApplicationDAO;
+    private final RoomRestrictionDAO roomRestrictionDAO;
+
+    @Autowired
+    private RoomImplementResponseMapper roomImplementResponseMapper;
 
     /**
      * Retrieves a List of Rooms from the Database
@@ -76,19 +87,85 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     @Transactional
-    public RoomResponse createRoom(RoomRequest room) {
-        String stringId = room.getBuilding() +
-                room.getRoomNum() +
-                room.getSubRoom();
+    public SpecificRoomResponse createRoom(RoomRequest roomRequest) {
+        String stringId = roomRequest.getBuilding() + roomRequest.getRoomNum() + roomRequest.getSubRoom();
         Long id = Long.parseLong(stringId);
-        try {
-            roomDAO.findById(id);
-            throw new EntityExistsException("Room with id " + id + " already exists");
-        } catch (EntityExistsException e) {
-            Room entity = roomRequestMapper.toEntity(room);
-            entity.setId(id);
-            return roomResponseMapper.toResponse(roomDAO.save(entity));
+
+        if (roomDAO.existsById(id)) {
+            throw new IllegalArgumentException("A room with ID " + id + " already exists.");
         }
+
+        // Mapear la solicitud a la entidad Room
+        Room room = roomRequestMapper.toEntity(roomRequest);
+        room.setId(id);
+
+        // Guardar la sala
+        room = roomDAO.save(room);
+
+        // Guardar implementos con estado
+        if (roomRequest.getImplementIds() != null && roomRequest.getImplementStates() != null) {
+            List<RoomImplement> roomImplementList = new ArrayList<>();
+            for (int i = 0; i < roomRequest.getImplementIds().size(); i++) {
+                Implement implement = implementDAO.findById(roomRequest.getImplementIds().get(i));
+                if (implement == null) {
+                    throw new EntityNotFoundException("Implement not found with ID " + roomRequest.getImplementIds().get(i));
+                }
+
+                RoomImplement roomImplement = RoomImplement.builder()
+                        .room(room)  // Usamos la sala ya persistida
+                        .implement(implement)
+                        .state(String.valueOf(roomRequest.getImplementStates().get(i)))
+                        .build();
+                roomImplementDAO.save(roomImplement);
+                roomImplementList.add(roomImplement);
+            }
+            room.setImplementList(roomImplementList);
+        }
+
+        // Guardar software con versión
+        if (roomRequest.getSoftwareIds() != null && roomRequest.getSoftwareVersions() != null) {
+            List<RoomApplication> roomApplicationList = new ArrayList<>();
+            for (int i = 0; i < roomRequest.getSoftwareIds().size(); i++) {
+                Application application = applicationDAO.findById(roomRequest.getSoftwareIds().get(i));
+                if (application == null) {
+                    throw new EntityNotFoundException("Application not found with ID " + roomRequest.getSoftwareIds().get(i));
+                }
+
+                RoomApplication roomApplication = RoomApplication.builder()
+                        .room(room)  // Usamos la sala ya persistida
+                        .application(application)
+                        .version(roomRequest.getSoftwareVersions().get(i))
+                        .build();
+                roomApplicationDAO.save(roomApplication);
+                roomApplicationList.add(roomApplication);
+            }
+            room.setRoomApplications(roomApplicationList);
+        }
+
+        // Guardar restricciones
+        if (roomRequest.getRestrictionIds() != null) {
+            List<Restriction> restrictionsList = restrictionDAO.findAllById(roomRequest.getRestrictionIds());
+            Room finalRoom = room;
+            room.setRestrictions(restrictionsList.stream()
+                    .map(restriction -> {
+                        RoomRestriction roomRestriction = new RoomRestriction();
+                        roomRestriction.setRoom(finalRoom);
+                        roomRestriction.setRestriction(restriction);
+                        return roomRestriction;
+                    })
+                    .collect(Collectors.toList()));
+        }
+
+        // Refrescar la entidad Room para cargar relaciones
+        room = roomDAO.save(room); // We save the room after associating with implements, software, and restrictions.
+
+        // Usamos findById y verificamos la existencia manualmente
+        room = roomDAO.findById(room.getId());
+        if (room == null) {
+            throw new EntityNotFoundException("Room not found");
+        }
+
+        return specificRoomResponseMapper.toResponse(room);
     }
 
     /**
@@ -100,13 +177,97 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     @Transactional
-    public RoomResponse updateRoom(Long id, RoomRequest room) {
+    public SpecificRoomResponse updateRoom(Long id, RoomRequest roomRequest) {
+        // Buscar la sala existente
         Room foundRoom = roomDAO.findById(id);
-        if (room.getRoomName() != null) foundRoom.setRoomName(room.getRoomName());
-        if (room.getComputerAmount() != null) foundRoom.setComputerAmount(room.getComputerAmount());
+        if (foundRoom == null) {
+            throw new EntityNotFoundException("Room not found with ID " + id);
+        }
+
+        // Actualizar los campos básicos si están presentes
+        if (roomRequest.getRoomName() != null) {
+            foundRoom.setRoomName(roomRequest.getRoomName());
+        }
+        if (roomRequest.getComputerAmount() != null) {
+            foundRoom.setComputerAmount(roomRequest.getComputerAmount());
+        }
+
+        // Eliminar implementos antiguos
+        if (foundRoom.getImplementList() != null) {
+            roomImplementDAO.deleteAll(foundRoom.getImplementList());
+        }
+
+        // Actualizar implementos con estado
+        if (roomRequest.getImplementIds() != null && roomRequest.getImplementStates() != null) {
+            List<RoomImplement> roomImplementList = new ArrayList<>();
+            for (int i = 0; i < roomRequest.getImplementIds().size(); i++) {
+                Implement implement = implementDAO.findById(roomRequest.getImplementIds().get(i));
+                if (implement == null) {
+                    throw new EntityNotFoundException("Implement not found with ID " + roomRequest.getImplementIds().get(i));
+                }
+
+                RoomImplement roomImplement = RoomImplement.builder()
+                        .room(foundRoom)
+                        .implement(implement)
+                        .state(String.valueOf(roomRequest.getImplementStates().get(i)))
+                        .build();
+                roomImplementDAO.save(roomImplement);
+                roomImplementList.add(roomImplement);
+            }
+            foundRoom.setImplementList(roomImplementList);
+        }
+
+        // Eliminar software antiguo
+        if (foundRoom.getRoomApplications() != null) {
+            roomApplicationDAO.deleteAll(foundRoom.getRoomApplications());
+        }
+
+        // Actualizar software con versión
+        if (roomRequest.getSoftwareIds() != null && roomRequest.getSoftwareVersions() != null) {
+            List<RoomApplication> roomApplicationList = new ArrayList<>();
+            for (int i = 0; i < roomRequest.getSoftwareIds().size(); i++) {
+                Application application = applicationDAO.findById(roomRequest.getSoftwareIds().get(i));
+                if (application == null) {
+                    throw new EntityNotFoundException("Application not found with ID " + roomRequest.getSoftwareIds().get(i));
+                }
+
+                RoomApplication roomApplication = RoomApplication.builder()
+                        .room(foundRoom)
+                        .application(application)
+                        .version(roomRequest.getSoftwareVersions().get(i))
+                        .build();
+                roomApplicationDAO.save(roomApplication);
+                roomApplicationList.add(roomApplication);
+            }
+            foundRoom.setRoomApplications(roomApplicationList);
+        }
+
+        // Eliminar restricciones antiguas
+        roomRestrictionDAO.deleteAllByRoomId(foundRoom.getId());
+        foundRoom.getRestrictions().clear();
+
+        // Actualizar restricciones
+        if (roomRequest.getRestrictionIds() != null) {
+            List<Restriction> restrictionsList = restrictionDAO.findAllById(roomRequest.getRestrictionIds());
+            foundRoom.setRestrictions(restrictionsList.stream()
+                    .map(restriction -> {
+                        RoomRestriction roomRestriction = new RoomRestriction();
+                        roomRestriction.setRoom(foundRoom);
+                        roomRestriction.setRestriction(restriction);
+                        return roomRestriction;
+                    })
+                    .collect(Collectors.toList()));
+        }
+
+        // Guardar los cambios
         roomDAO.save(foundRoom);
-        return roomResponseMapper.toResponse(foundRoom);
+        Room updatedRoom = roomDAO.findById(foundRoom.getId());
+
+        // Devolver la respuesta en el formato esperado
+        return specificRoomResponseMapper.toResponse(updatedRoom);
     }
+
+
 
     /**
      * Deletes the room of the given id if it exists.
@@ -117,9 +278,31 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public RoomResponse deleteRoom(Long id) {
-        Room deletedRoom = roomDAO.findById(id);
+        Room room = roomDAO.findById(id);
+
+        // Verificar si hay reservas
+        if (!room.getReservations().isEmpty()) {
+            throw new RuntimeException("No se puede eliminar la sala porque tiene reservas asociadas");
+        }
+
+        // Limpiar relaciones con implementos
+        if (room.getImplementList() != null && !room.getImplementList().isEmpty()) {
+            roomImplementDAO.deleteAllByRoomId(room.getId()); // Borrar implementos relacionados
+        }
+
+        // Limpiar relaciones con software
+        if (room.getRoomApplications() != null && !room.getRoomApplications().isEmpty()) {
+            roomApplicationDAO.deleteAllByRoomId(room.getId()); // Borrar software relacionado
+        }
+
+        // Limpiar relaciones con restricciones
+        if (room.getRestrictions() != null && !room.getRestrictions().isEmpty()) {
+            roomRestrictionDAO.deleteAllByRoomId(room.getId()); // Borrar restricciones relacionadas
+        }
+
         roomDAO.deleteById(id);
-        return roomResponseMapper.toResponse(deletedRoom);
+
+        return roomResponseMapper.toResponse(room);
     }
 
     /**

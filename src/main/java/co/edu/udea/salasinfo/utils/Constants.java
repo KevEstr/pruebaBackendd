@@ -39,6 +39,8 @@ public class Constants {
 
     // Past dates messages
     public static final String DATE_FIELD_NOT_PAST_MESSAGE = "'date' cannot be a past date";
+    public static final String STARTS_AT_FIELD_NOT_PAST_MESSAGE = "'startsAt' cannot be a past date";
+    public static final String ENDS_AT_FIELD_NOT_PAST_MESSAGE = "'endsAt' cannot be a past date";
 
     // Out of bounds
     public static final String SESSION_FIELD_OUT_OF_BOUNDS_MESSAGE = "'sessions' must be between 1 and 3";
