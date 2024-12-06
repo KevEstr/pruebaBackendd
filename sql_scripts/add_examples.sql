@@ -20,32 +20,15 @@ VALUES (202010, 30, '20', '201', 'Sala de Reuniones 1', 0);
 INSERT INTO room (roomId, computerAmount, building, roomNum, roomName, subRoom)
 VALUES (182181, 15, '18', '218', 'LIS - Sala 1', 1);
 
-INSERT INTO room (roomId, computerAmount, building, roomNum, roomName, subRoom)
-VALUES (193101, 25, '19', '310', 'Sala de Capacitación 1', 0);
-
-INSERT INTO room (roomId, computerAmount, building, roomNum, roomName, subRoom)
-VALUES (221102, 10, '22', '110', 'Sala de Talleres', 1);
-
-INSERT INTO room (roomId, computerAmount, building, roomNum, roomName, subRoom)
-VALUES (151210, 40, '15', '1210', 'Auditorio Principal', 0);
-
 -- Inserting applications
 INSERT INTO application (applicationName, version) VALUES ('Microsoft Office', '2021');
 INSERT INTO application (applicationName, version) VALUES ('Zoom', '5.0');
 INSERT INTO application (applicationName, version) VALUES ('Adobe Photoshop', '2022');
-INSERT INTO application (applicationName, version) VALUES ('Visual Studio', '2019');
-INSERT INTO application (applicationName, version) VALUES ('Netbeans', '2013');
-INSERT INTO application (applicationName, version) VALUES ('InteliJ', '2025');
-INSERT INTO application (applicationName, version) VALUES ('Spotify', '2029');
-
 
 -- Assigning applications to rooms
 INSERT INTO roomsoftware (applicationId, roomId) VALUES (1, 211012);
 INSERT INTO roomsoftware (applicationId, roomId) VALUES (2, 202010);
 INSERT INTO roomsoftware (applicationId, roomId) VALUES (3, 182181);
-INSERT INTO roomsoftware (applicationId, roomId) VALUES (4, 193101);  -- Microsoft Office en Sala de Capacitación 1
-INSERT INTO roomsoftware (applicationId, roomId) VALUES (5, 221102);  -- Zoom en Sala de Talleres
-INSERT INTO roomsoftware (applicationId, roomId) VALUES (6, 151210);  -- Adobe Photoshop en Auditorio Principal
 
 -- Inserting restrictions
 INSERT INTO restriction (description) VALUES ('No se permiten alimentos o bebidas');
@@ -56,30 +39,16 @@ INSERT INTO restriction (description) VALUES ('No se permiten mascotas');
 INSERT INTO roomrestriction (restrictionId, roomId) VALUES (1, 211012);
 INSERT INTO roomrestriction (restrictionId, roomId) VALUES (2, 202010);
 INSERT INTO roomrestriction (restrictionId, roomId) VALUES (3, 182181);
--- Asignar restricciones a las nuevas salas
-INSERT INTO roomrestriction (restrictionId, roomId) VALUES (1, 193101);  -- No se permiten alimentos o bebidas
-INSERT INTO roomrestriction (restrictionId, roomId) VALUES (2, 221102);  -- No fumar en la sala
-INSERT INTO roomrestriction (restrictionId, roomId) VALUES (3, 151210);  -- No se permiten mascotas
-
 
 -- Inserting implements
 INSERT INTO implement (implementName, state) VALUES ('Proyector', 0);
 INSERT INTO implement (implementName, state) VALUES ('Pizarra', 1);
 INSERT INTO implement (implementName, state) VALUES ('Sistema de Sonido', 2);
-INSERT INTO implement (implementName, state) VALUES ('Escritorios', 1);
-INSERT INTO implement (implementName, state) VALUES ('Oculus', 1);
-INSERT INTO implement (implementName, state) VALUES ('Impresora', 1);
-
 
 -- Assigning implements to rooms
 INSERT INTO roomimplement (implementId, roomId) VALUES (1, 211012);
 INSERT INTO roomimplement (implementId, roomId) VALUES (2, 202010);
 INSERT INTO roomimplement (implementId, roomId) VALUES (2, 182181);
--- Asignar implementos a las nuevas salas
-INSERT INTO roomimplement (implementId, roomId) VALUES (4, 193101);  -- Proyector en Sala de Capacitación 1
-INSERT INTO roomimplement (implementId, roomId) VALUES (5, 221102);  -- Pizarra en Sala de Talleres
-INSERT INTO roomimplement (implementId, roomId) VALUES (6, 151210);  -- Sistema de Sonido en Auditorio Principal
-
 
 -- Inserting reservation states
 INSERT INTO reservationstate (description) VALUES (0);

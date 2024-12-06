@@ -31,7 +31,7 @@ import java.util.List;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    @Operation(summary = RestConstants.SWAGGER_CREATE_RESERVATION_SUMMARY)
+    @Operation(summary = RestConstants.SWAGGER_CREATE_SINGLE_TIME_RESERVATION_SUMMARY)
     @ApiResponses(value = {
             @ApiResponse(responseCode = RestConstants.CODE_CREATED,
                     description = RestConstants.SWAGGER_CREATE_RESERVATION_SUCCESS,
@@ -43,9 +43,9 @@ public class ReservationController {
                     description = RestConstants.SWAGGER_RESERVATION_CONFLICT,
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
-    @PostMapping()
-    public ResponseEntity<ReservationResponse> save(@RequestBody @Valid ReservationRequest reservation) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.save(reservation));
+    @PostMapping("/once")
+    public ResponseEntity<ReservationResponse> saveSingleTimeReservation(@RequestBody @Valid ReservationRequest reservation) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.saveSingleTimeReservation(reservation));
     }
 
     @Operation(summary = RestConstants.SWAGGER_CREATE_BUNCH_RESERVATIONS_SUMMARY)

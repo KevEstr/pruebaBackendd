@@ -2,6 +2,8 @@ package co.edu.udea.salasinfo.service.impl;
 
 import co.edu.udea.salasinfo.dto.request.RestrictionRequest;
 import co.edu.udea.salasinfo.dto.response.RestrictionResponse;
+import co.edu.udea.salasinfo.exceptions.EntityAlreadyExistsException;
+import co.edu.udea.salasinfo.exceptions.EntityNotFoundException;
 import co.edu.udea.salasinfo.mapper.request.RestrictionRequestMapper;
 import co.edu.udea.salasinfo.mapper.response.RestrictionResponseMapper;
 import co.edu.udea.salasinfo.persistence.RestrictionDAO;

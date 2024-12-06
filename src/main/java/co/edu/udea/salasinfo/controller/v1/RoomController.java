@@ -3,6 +3,7 @@ package co.edu.udea.salasinfo.controller.v1;
 import co.edu.udea.salasinfo.dto.request.RoomRequest;
 import co.edu.udea.salasinfo.dto.request.filter.RoomFilter;
 import co.edu.udea.salasinfo.configuration.advisor.responses.ExceptionResponse;
+import co.edu.udea.salasinfo.dto.response.room.FreeScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
@@ -14,15 +15,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,18 +38,20 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @Operation(summary = RestConstants.SWAGGER_FIND_ALL_ROOMS_SUMMARY)
+    @Operation(summary = RestConstants.SWAGGER_FIND_ALL_ROOMS_SUMMARY,
+            security = @SecurityRequirement(name = RestConstants.SWAGGER_SECURITY_TYPE))
     @ApiResponses(value = {
             @ApiResponse(responseCode = RestConstants.CODE_OK, description = RestConstants.SWAGGER_FOUND_ROOMS,
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = RoomResponse.class))))
     })
     @GetMapping
-    public ResponseEntity<List<RoomResponse>> findAll(@Valid RoomFilter filter) {
+    public ResponseEntity<List<RoomResponse>> findAll(@Nullable @Valid RoomFilter filter) {
         return ResponseEntity.ok(roomService.findAll(filter));
     }
 
-    @Operation(summary = RestConstants.SWAGGER_CREATE_ROOM_SUMMARY)
+    @Operation(summary = RestConstants.SWAGGER_CREATE_ROOM_SUMMARY,
+            security = @SecurityRequirement(name = RestConstants.SWAGGER_SECURITY_TYPE))
     @ApiResponses(value = {
             @ApiResponse(responseCode = RestConstants.CODE_CREATED, description = "Room created successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = RoomResponse.class)))
@@ -118,4 +124,15 @@ public class RoomController {
     public ResponseEntity<List<RoomScheduleResponse>> findSchedule(@PathVariable Long id) {
         return ResponseEntity.ok(roomService.findRoomSchedule(id));
     }
+
+    @GetMapping("/{id}/freeSchedule")
+    public ResponseEntity<List<FreeScheduleResponse>> findFreeRoomSchedule(
+            @PathVariable Long id,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedDate) {
+        System.out.println("Fecha seleccionada: "+selectedDate);
+        List<FreeScheduleResponse> freeSchedule = roomService.findFreeRoomSchedule(id, selectedDate);
+
+        return ResponseEntity.ok(freeSchedule);
+    }
+
 }

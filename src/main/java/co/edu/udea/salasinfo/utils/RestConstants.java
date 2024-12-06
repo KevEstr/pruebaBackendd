@@ -12,9 +12,9 @@ public class RestConstants {
     public static final String CODE_CONFLICT = "409";
     public static final String CODE_BAD_REQUEST = "400";
     public static final String CODE_NOT_FOUND = "404";
-
     // Validation Messages
     public static final String SWAGGER_VALIDATIONS_DONT_PASS = "Some of the fields don't pass validations";
+    public static final String SWAGGER_SECURITY_TYPE = "bearerAuth";
 
 
     // Authentication Messages
@@ -26,7 +26,7 @@ public class RestConstants {
     public static final String SWAGGER_USER_ALREADY_REGISTERED = "A user with that email is already registered";
 
     // Reservation Messages
-    public static final String SWAGGER_CREATE_RESERVATION_SUMMARY = "Creates a new reservation";
+    public static final String SWAGGER_CREATE_SINGLE_TIME_RESERVATION_SUMMARY = "Creates a new single time reservation ";
     public static final String SWAGGER_CREATE_RESERVATION_SUCCESS = "Reservation has been saved";
     public static final String SWAGGER_CREATE_BUNCH_RESERVATIONS_SUMMARY = "Creates a bunch of reservations for the whole semester";
     public static final String SWAGGER_BUNCH_RESERVATIONS_SUCCESS = "Reservations have been saved";

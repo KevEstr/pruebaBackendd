@@ -13,7 +13,6 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         unmappedSourcePolicy = ReportingPolicy.IGNORE,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
-
 public interface RoomRequestMapper {
     Room toEntity(RoomRequest request);
 

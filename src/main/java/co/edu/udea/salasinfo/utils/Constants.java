@@ -15,6 +15,7 @@ public class Constants {
     // Null messages
     public static final String ACTIVITY_NAME_FIELD_NOT_NULL_MESSAGE = "'activityName' cannot be null";
     public static final String ACTIVITY_DESCRIPTION_FIELD_NOT_NULL_MESSAGE = "'activityDescription' cannot be null";
+    public static final String DATE_FIELD_NOT_NULL_MESSAGE = "'date' cannot be null";
     public static final String STARTS_AT_FIELD_NOT_NULL_MESSAGE = "'startsAt' cannot be null";
     public static final String ENDS_AT_FIELD_NOT_NULL_MESSAGE = "'endsAt' cannot be null";
     public static final String TYPE_FIELD_NOT_NULL_MESSAGE = "'type' cannot be null";
@@ -37,6 +38,7 @@ public class Constants {
     public static final String SUB_ROOM_FIELD_NOT_NULL_MESSAGE = "'subRoom' cannot be null";
 
     // Past dates messages
+    public static final String DATE_FIELD_NOT_PAST_MESSAGE = "'date' cannot be a past date";
     public static final String STARTS_AT_FIELD_NOT_PAST_MESSAGE = "'startsAt' cannot be a past date";
     public static final String ENDS_AT_FIELD_NOT_PAST_MESSAGE = "'endsAt' cannot be a past date";
 
@@ -53,7 +55,8 @@ public class Constants {
 
     public static final String USER_REGISTERED_MESSAGE = "%s %s with '%s' has been registered";
 
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+    public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String HOUR_FORMAT = "HH:mm";
 
 

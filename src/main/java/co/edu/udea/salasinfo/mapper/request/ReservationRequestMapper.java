@@ -28,9 +28,17 @@ public interface ReservationRequestMapper {
         return User.builder().id(id).build();
     }
 
-    @Mapping(target = "user", source = "userId")
-    @Mapping(target = "room", source = "roomId")
-    Reservation toEntity(ReservationRequest request);
+    @Generated
+    default Reservation toEntity(ReservationRequest request) {
+        return Reservation.builder()
+                .activityName(request.getActivityName())
+                .activityDescription(request.getActivityDescription())
+                .startsAt(request.getDate().atTime(request.getStartsAt()))
+                .endsAt(request.getDate().atTime(request.getEndsAt()))
+                .user(stringToUser(request.getUserId()))
+                .room(longToRoom(request.getRoomId()))
+                .build();
+    }
 
     List<Reservation> toEntities(List<ReservationRequest> requests);
 
