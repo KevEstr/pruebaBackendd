@@ -10,5 +10,4 @@ import lombok.*;
 @ToString
 public class ImplementRequest {
     private String name;
-    private String state;
 }

@@ -27,12 +27,9 @@ public class Restriction implements Serializable {
     private String description;
 
     @JsonIgnore
-    @ManyToMany(
-            targetEntity = Room.class,
-            mappedBy = "restrictions",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
-    )
-    private List<Room> rooms;
+    @OneToMany(mappedBy = "restriction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RoomRestriction> roomRestrictions;
+
+    // Falta ponr las otras relaciones
 
 }

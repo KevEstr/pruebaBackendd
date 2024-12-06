@@ -15,5 +15,5 @@ public class RestrictionResponse {
     // Attributes
     private Long id;
     private String description;
-    private List<RoomResponse> rooms;
+    //private List<RoomResponse> rooms;
 }

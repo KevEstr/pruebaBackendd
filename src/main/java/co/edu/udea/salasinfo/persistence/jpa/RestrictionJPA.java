@@ -42,4 +42,14 @@ public class RestrictionJPA implements RestrictionDAO {
     public void deleteById(Long id) {
         restrictionRepository.deleteById(id);
     }
+
+    @Override
+    public List<Restriction> findAllById(List<Long> restrictionIds) {
+        return restrictionRepository.findAllById(restrictionIds);
+    }
+
+    @Override
+    public boolean existsByDescription(String description) {
+        return restrictionRepository.existsByDescription(description);
+    }
 }

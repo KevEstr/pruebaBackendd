@@ -80,16 +80,11 @@ public class DataInitializer {
             roomRepository.saveAll(Arrays.asList(room1, room2, room3));
 
             // Inserting applications
-            Application app1 = new Application(null, "Microsoft Office", "2021", null);
-            Application app2 = new Application(null, "Zoom", "5.0", null);
-            Application app3 = new Application(null, "Adobe Photoshop", "2022", null);
+            Application app1 = new Application(null, "Microsoft Office", null);
+            Application app2 = new Application(null, "Zoom", null);
+            Application app3 = new Application(null, "Adobe Photoshop", null);
             applicationRepository.saveAll(Arrays.asList(app1, app2, app3));
 
-            // Assigning applications to rooms
-            room1.setSoftware(List.of(app1));
-            room2.setSoftware(List.of(app2));
-            room3.setSoftware(List.of(app3));
-            roomRepository.saveAll(Arrays.asList(room1, room2, room3));
 
             // Inserting restrictions
             Restriction restriction1 = new Restriction(null, "No se permiten alimentos o bebidas", null);
@@ -97,23 +92,29 @@ public class DataInitializer {
             Restriction restriction3 = new Restriction(null, "No se permiten mascotas", null);
             restrictionRepository.saveAll(Arrays.asList(restriction1, restriction2, restriction3));
 
+            RoomRestriction roomRestriction1 = new RoomRestriction();
+            roomRestriction1.setRoom(room1);
+            roomRestriction1.setRestriction(restriction1);
+
+            RoomRestriction roomRestriction2 = new RoomRestriction();
+            roomRestriction2.setRoom(room2);
+            roomRestriction2.setRestriction(restriction2);
+
+            RoomRestriction roomRestriction3 = new RoomRestriction();
+            roomRestriction3.setRoom(room3);
+            roomRestriction3.setRestriction(restriction3);
+
             // Assigning restrictions to rooms
-            room1.setRestrictions(List.of(restriction1));
-            room2.setRestrictions(List.of(restriction2));
-            room3.setRestrictions(List.of(restriction3));
+            room1.setRestrictions(List.of(roomRestriction1));
+            room2.setRestrictions(List.of(roomRestriction2));
+            room3.setRestrictions(List.of(roomRestriction3));
             roomRepository.saveAll(Arrays.asList(room1, room2, room3));
 
             // Inserting implements
-            Implement implement1 = new Implement(null, "Proyector", ImplementCondition.GOOD, null);
-            Implement implement2 = new Implement(null, "Pizarra", ImplementCondition.BROKEN, null);
-            Implement implement3 = new Implement(null, "Sistema de Sonido", ImplementCondition.BAD, null);
+            Implement implement1 = new Implement(null, "Proyector", null);
+            Implement implement2 = new Implement(null, "Pizarra", null);
+            Implement implement3 = new Implement(null, "Sistema de Sonido",null);
             implementRepository.saveAll(Arrays.asList(implement1, implement2, implement3));
-
-            // Assigning implements to rooms
-            room1.setImplementList(List.of(implement1));
-            room2.setImplementList(List.of(implement2));
-            room3.setImplementList(List.of(implement2));
-            roomRepository.saveAll(Arrays.asList(room1, room2, room3));
 
             // Inserting reservation states
             ReservationState state1 = new ReservationState(null, RStatus.ACCEPTED);

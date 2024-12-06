@@ -62,4 +62,42 @@ public class RestConstants {
     public static final String SWAGGER_USER_NOT_FOUND = "User not found";
     public static final String SWAGGER_UPDATE_USER_ROLE_SUMMARY = "Update the role of a User";
     public static final String SWAGGER_USER_ROLE_CHANGED = "User role has changed";
+
+    // Restriction Messages
+    public static final String SWAGGER_FIND_ALL_RESTRICTIONS_SUMMARY = "Find all restrictions";
+    public static final String SWAGGER_FOUND_RESTRICTIONS = "List with all restrictions";
+    public static final String SWAGGER_CREATE_RESTRICTION_SUMMARY = "Create a new restriction";
+    public static final String SWAGGER_RESTRICTION_CREATED = "Restriction created successfully";
+    public static final String SWAGGER_RESTRICTION_FOUND = "Restriction has been found";
+    public static final String SWAGGER_RESTRICTION_NOT_FOUND = "Restriction not found";
+    public static final String SWAGGER_UPDATE_RESTRICTION_SUMMARY = "Update a restriction";
+    public static final String SWAGGER_RESTRICTION_UPDATED = "Restriction updated successfully";
+    public static final String SWAGGER_DELETE_RESTRICTION_SUMMARY = "Delete a restriction";
+    public static final String SWAGGER_RESTRICTION_DELETED = "Restriction deleted successfully";
+    public static final String SWAGGER_FIND_RESTRICTION_BY_ID_SUMMARY = "Get a restriction by ID";
+
+    //Implement messages
+    public static final String SWAGGER_FIND_ALL_IMPLEMENTS_SUMMARY = "Retrieve all implements";
+    public static final String SWAGGER_FIND_ALL_IMPLEMENTS_DESCRIPTION = "Fetch the list of all implement records in the system.";
+    public static final String SWAGGER_SAVE_IMPLEMENT_SUMMARY = "Create a new implement";
+    public static final String SWAGGER_SAVE_IMPLEMENT_DESCRIPTION = "Create a new implement record with the provided details.";
+    public static final String SWAGGER_FIND_IMPLEMENT_BY_ID_SUMMARY = "Retrieve implement by ID";
+    public static final String SWAGGER_FIND_IMPLEMENT_BY_ID_DESCRIPTION = "Fetch the implement record by its unique ID.";
+    public static final String SWAGGER_REMOVE_IMPLEMENT_SUMMARY = "Delete implement by ID";
+    public static final String SWAGGER_REMOVE_IMPLEMENT_DESCRIPTION = "Delete the implement record identified by the given ID.";
+    public static final String SWAGGER_UPDATE_IMPLEMENT_SUMMARY = "Update implement by ID";
+    public static final String SWAGGER_UPDATE_IMPLEMENT_DESCRIPTION = "Update the implement record identified by the given ID with the provided details.";
+
+    //Application messages
+    public static final String SWAGGER_FIND_ALL_APPLICATIONS_SUMMARY = "Retrieve all applications";
+    public static final String SWAGGER_FIND_ALL_APPLICATIONS_DESCRIPTION = "Fetch the list of all application records in the system.";
+    public static final String SWAGGER_SAVE_APPLICATION_SUMMARY = "Create a new application";
+    public static final String SWAGGER_SAVE_APPLICATION_DESCRIPTION = "Create a new application record with the provided details.";
+    public static final String SWAGGER_FIND_APPLICATION_BY_ID_SUMMARY = "Retrieve application by ID";
+    public static final String SWAGGER_FIND_APPLICATION_BY_ID_DESCRIPTION = "Fetch the application record by its unique ID.";
+    public static final String SWAGGER_REMOVE_APPLICATION_SUMMARY = "Delete application by ID";
+    public static final String SWAGGER_REMOVE_APPLICATION_DESCRIPTION = "Delete the application record identified by the given ID.";
+    public static final String SWAGGER_UPDATE_APPLICATION_SUMMARY = "Update application by ID";
+    public static final String SWAGGER_UPDATE_APPLICATION_DESCRIPTION = "Update the application record identified by the given ID with the provided details.";
+
 }

@@ -8,6 +8,7 @@ import co.edu.udea.salasinfo.model.User;
 import co.edu.udea.salasinfo.utils.Generated;
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public interface ReservationRequestMapper {
     }
 
     @Generated
-    default Reservation toEntity(ReservationRequest request){
+    default Reservation toEntity(ReservationRequest request) {
         return Reservation.builder()
                 .activityName(request.getActivityName())
                 .activityDescription(request.getActivityDescription())

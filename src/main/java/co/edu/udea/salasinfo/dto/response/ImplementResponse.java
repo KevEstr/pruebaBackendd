@@ -14,6 +14,4 @@ import java.util.List;
 public class ImplementResponse {
     private Long id;
     private String name;
-    private String state;
-    private List<RoomResponse> rooms;
 }

@@ -39,4 +39,9 @@ public class RoomJPA implements RoomDAO {
     public void deleteById(Long id) {
         roomRepository.deleteById(id);
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        return roomRepository.existsById(id);
+    }
 }

@@ -74,9 +74,16 @@ class RestrictionServiceImplTest {
         RestrictionRequest request = new RestrictionRequest();
         request.setDescription("No food in rooms");
 
-        when(restrictionDAO.findByDescription(any())).thenThrow(new EntityNotFoundException("Description not found"));
+        // Simulamos que no existe una restricción con la misma descripción
+        when(restrictionDAO.existsByDescription(any())).thenReturn(false);
+
+        // Mapeo de la solicitud a la entidad
         when(restrictionRequestMapper.toEntity(any())).thenReturn(mockRestriction);
+
+        // Guardamos la restricción
         when(restrictionDAO.save(any())).thenReturn(mockRestriction);
+
+        // Mapeo de la entidad a la respuesta
         when(restrictionResponseMapper.toResponse(any())).thenReturn(mockRestrictionResponse);
 
         // Act
@@ -85,8 +92,9 @@ class RestrictionServiceImplTest {
         // Assert
         assertNotNull(response);
         assertEquals(mockRestrictionResponse, response);
-        verify(restrictionDAO).save(any());
+        verify(restrictionDAO).save(any());  // Verificamos que el DAO haya guardado la restricción
     }
+
 
     @Test
     void createRestriction_ThrowsEntityAlreadyExistsException() {
@@ -94,10 +102,11 @@ class RestrictionServiceImplTest {
         RestrictionRequest request = new RestrictionRequest();
         request.setDescription("No food in rooms");
 
-        when(restrictionDAO.findByDescription(any())).thenReturn(mockRestriction);
+        // Mock the existsByDescription method to return true
+        when(restrictionDAO.existsByDescription(any())).thenReturn(true);
 
         // Act & Assert
-        assertThrows(EntityAlreadyExistsException.class, () -> restrictionService.createRestriction(request));
+        assertThrows(IllegalArgumentException.class, () -> restrictionService.createRestriction(request));
         verify(restrictionDAO, never()).save(any());
     }
 

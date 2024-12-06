@@ -1,11 +1,17 @@
 package co.edu.udea.salasinfo.service.impl;
 
+import co.edu.udea.salasinfo.dto.request.ApplicationRequest;
+import co.edu.udea.salasinfo.dto.response.ApplicationResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
+import co.edu.udea.salasinfo.mapper.request.ApplicationRequestMapper;
+import co.edu.udea.salasinfo.mapper.response.ApplicationResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomResponseMapper;
+import co.edu.udea.salasinfo.model.RoomApplication;
 import co.edu.udea.salasinfo.persistence.ApplicationDAO;
 import co.edu.udea.salasinfo.model.Application;
 import co.edu.udea.salasinfo.model.Room;
 import co.edu.udea.salasinfo.service.ApplicationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +22,8 @@ import java.util.*;
 public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationDAO applicationDAO;
     private final RoomResponseMapper roomResponseMapper;
+    private final ApplicationRequestMapper applicationRequestMapper;
+    private final ApplicationResponseMapper applicationResponseMapper;
 
 
     //retorna una lista de salones, recibe una lista(string) de application(columna applicationName)
@@ -77,8 +85,47 @@ public class ApplicationServiceImpl implements ApplicationService {
         return roomResponseMapper.toResponses(matchedRooms);
     }
 
+    @Override
+    public List<ApplicationResponse> findAll() {
+        List<Application> applications = applicationDAO.findAll();
+        return applicationResponseMapper.toResponses(applications);
+    }
 
+    @Override
+    public ApplicationResponse findById(Long id) {
+        Application application = applicationDAO.findById(id);
+        return applicationResponseMapper.toResponse(application);
+    }
 
+    @Override
+    @Transactional
+    public ApplicationResponse createApplication(ApplicationRequest request) {
+        if (applicationDAO.existsByName(request.getName())) {
+            throw new IllegalArgumentException("An application with the name '" + request.getName() + "' already exists.");
+        }
+        Application application = applicationRequestMapper.toEntity(request);
+        return applicationResponseMapper.toResponse(applicationDAO.save(application));
+    }
+
+    @Override
+    @Transactional
+    public ApplicationResponse updateApplication(Long id, ApplicationRequest request) {
+        Application application = applicationDAO.findById(id);
+        if (request.getName() != null && !request.getName().equals(application.getName())
+                && applicationDAO.existsByName(request.getName())) {
+            throw new IllegalArgumentException("An application with the name '" + request.getName() + "' already exists.");
+        }
+        if (request.getName() != null) application.setName(request.getName());
+        return applicationResponseMapper.toResponse(applicationDAO.save(application));
+    }
+
+    @Override
+    @Transactional
+    public ApplicationResponse deleteApplication(Long id) {
+        Application application = applicationDAO.findById(id);
+        applicationDAO.deleteById(id);
+        return applicationResponseMapper.toResponse(application);
+    }
 }
 
 
