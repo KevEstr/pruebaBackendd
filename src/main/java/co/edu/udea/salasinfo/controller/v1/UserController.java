@@ -32,7 +32,7 @@ public class UserController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class))))
     })
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('Admin')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
     }
@@ -57,7 +57,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     })
     @PutMapping("/{id}/role")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('Admin')")
     public ResponseEntity<UserResponse> updateUserRole(@PathVariable String id, @RequestBody @Valid UserRoleRequest userRoleRequest) {
         return ResponseEntity.ok(userService.updateRole(id, userRoleRequest.getRoleName()));
     }

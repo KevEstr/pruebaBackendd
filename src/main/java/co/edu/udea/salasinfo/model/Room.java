@@ -1,6 +1,9 @@
 package co.edu.udea.salasinfo.model;
 
+import co.edu.udea.salasinfo.dto.response.room.RoomApplicationResponse;
+import co.edu.udea.salasinfo.dto.response.room.RoomImplementResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -37,33 +40,19 @@ public class Room implements Serializable {
     @Column(name = "subRoom", length = 2)
     private Integer subRoom;
 
-    @JsonIgnore
-    @ManyToMany(targetEntity = Application.class, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "roomsoftware",
-            joinColumns = @JoinColumn(name = "roomId"),
-            inverseJoinColumns = @JoinColumn(name = "applicationId")
-    )
-    private List<Application> software;
 
     @JsonIgnore
-    @ManyToMany(targetEntity = Restriction.class, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "roomrestriction",
-            joinColumns = @JoinColumn(name = "roomId"),
-            inverseJoinColumns = @JoinColumn(name = "restrictionId")
-    )
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<RoomApplication> roomApplications;
 
-    private List<Restriction> restrictions;
 
     @JsonIgnore
-    @ManyToMany(targetEntity = Implement.class, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "roomimplement",
-            joinColumns = @JoinColumn(name = "roomId"),
-            inverseJoinColumns = @JoinColumn(name = "implementId")
-    )
-    private List<Implement> implementList;
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<RoomRestriction> restrictions;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<RoomImplement> implementList;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
     private List<Reservation> reservations;

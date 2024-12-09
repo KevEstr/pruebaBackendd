@@ -108,17 +108,17 @@ class UserServiceImplTest {
         // Arrange
         when(userDAO.findById("1")).thenReturn(mockUser);
         Role mockRole = new Role(); // Assuming Role is a valid entity
-        when(roleDAO.findByRoleName(RoleName.ADMIN)).thenReturn(mockRole);
+        when(roleDAO.findByRoleName(RoleName.Admin)).thenReturn(mockRole);
         when(userDAO.save(mockUser)).thenReturn(mockUser);
         when(userResponseMapper.toResponse(mockUser)).thenReturn(mockUserResponse);
 
         // Act
-        UserResponse result = userService.updateRole("1", RoleName.ADMIN);
+        UserResponse result = userService.updateRole("1", RoleName.Admin);
 
         // Assert
         assertNotNull(result);
         verify(userDAO).findById("1");
-        verify(roleDAO).findByRoleName(RoleName.ADMIN);
+        verify(roleDAO).findByRoleName(RoleName.Admin);
         verify(userDAO).save(mockUser);
         verify(userResponseMapper).toResponse(mockUser);
     }

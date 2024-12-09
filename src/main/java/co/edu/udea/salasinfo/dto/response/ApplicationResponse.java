@@ -12,5 +12,4 @@ import lombok.*;
 public class ApplicationResponse {
     private Long id;
     private String name;
-    private String version;
 }

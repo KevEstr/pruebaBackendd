@@ -57,8 +57,8 @@ public class RoomController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = RoomResponse.class)))
     })
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<RoomResponse> save(@RequestBody @Valid RoomRequest room) {
+    @PreAuthorize("hasAnyRole('Admin')")
+    public ResponseEntity<SpecificRoomResponse> save(@RequestBody @Valid RoomRequest room) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomService.createRoom(room));
     }
 
@@ -82,7 +82,7 @@ public class RoomController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('Admin')")
     public ResponseEntity<RoomResponse> remove(@PathVariable Long id) {
         return ResponseEntity.ok(roomService.deleteRoom(id));
     }
@@ -95,8 +95,8 @@ public class RoomController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<RoomResponse> update(@PathVariable Long id, @RequestBody @Valid RoomRequest room) {
+    @PreAuthorize("hasAnyRole('Admin')")
+    public ResponseEntity<SpecificRoomResponse> update(@PathVariable Long id, @RequestBody @Valid RoomRequest room) {
         return ResponseEntity.ok(roomService.updateRoom(id, room));
     }
 

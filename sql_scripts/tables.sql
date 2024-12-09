@@ -66,7 +66,8 @@ CREATE TABLE room (
 
 CREATE TABLE roomimplement (
                                implementId BIGINT NOT NULL,
-                               roomId BIGINT NOT NULL
+                               roomId BIGINT NOT NULL,
+                               state SMALLINT CHECK (state BETWEEN 0 AND 3)
 );
 
 CREATE TABLE roomrestriction (
@@ -76,7 +77,8 @@ CREATE TABLE roomrestriction (
 
 CREATE TABLE roomsoftware (
                               applicationId BIGINT NOT NULL,
-                              roomId BIGINT NOT NULL
+                              roomId BIGINT NOT NULL,
+                              version VARCHAR(20)
 );
 
 ALTER TABLE customer

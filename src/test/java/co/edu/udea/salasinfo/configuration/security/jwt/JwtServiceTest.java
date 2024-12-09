@@ -42,7 +42,7 @@ class JwtServiceTest {
     void testGenerateToken() {
         // Arrange
         Map<String, String> claims = new HashMap<>();
-        claims.put("role", "USER");
+        claims.put("role", "Usuario");
 
         // Act
         String token = jwtService.generateToken(claims, userDetails);
@@ -56,7 +56,7 @@ class JwtServiceTest {
     void testExtractUsername() {
         // Arrange
         Map<String, String> claims = new HashMap<>();
-        claims.put("role", "USER");
+        claims.put("role", "Usuario");
         String token = jwtService.generateToken(claims, userDetails);
 
         // Act
@@ -70,21 +70,21 @@ class JwtServiceTest {
     void testGetClaim() {
         // Arrange
         Map<String, String> claims = new HashMap<>();
-        claims.put("role", "USER");
+        claims.put("role", "Usuario");
         String token = jwtService.generateToken(claims, userDetails);
 
         // Act
         String role = jwtService.getClaim(token, claimsMap -> claimsMap.get("role").toString());
 
         // Assert
-        assertEquals("USER", role);
+        assertEquals("Usuario", role);
     }
 
     @Test
     void testIsTokenValid() {
         // Arrange
         Map<String, String> claims = new HashMap<>();
-        claims.put("role", "USER");
+        claims.put("role", "Usuario");
         String token = jwtService.generateToken(claims, userDetails);
 
         // Act
@@ -98,7 +98,7 @@ class JwtServiceTest {
     void testIsTokenValid_InvalidUsername() {
         // Arrange
         Map<String, String> claims = new HashMap<>();
-        claims.put("role", "USER");
+        claims.put("role", "Usuario");
         String token = jwtService.generateToken(claims, userDetails);
 
         UserDetails invalidUserDetails = mock(UserDetails.class);

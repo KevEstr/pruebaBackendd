@@ -253,4 +253,5 @@ class ReservationServiceImplTest {
         assertEquals(1, responses.size());
         assertEquals(mockReservationResponse, responses.get(0));
     }
+
 }

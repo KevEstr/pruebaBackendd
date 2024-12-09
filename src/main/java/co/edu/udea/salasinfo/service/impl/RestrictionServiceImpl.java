@@ -39,14 +39,15 @@ public class RestrictionServiceImpl implements RestrictionService {
      */
     @Override
     @Transactional
-    public RestrictionResponse createRestriction(RestrictionRequest restriction){
-        try{
-            restrictionDAO .findByDescription(restriction.getDescription());
-            // Return a bad request if exist a restriction with that description or the created description
-            throw new EntityAlreadyExistsException(Restriction.class.getSimpleName());
-        } catch (EntityNotFoundException e){
-            return restrictionResponseMapper.toResponse(restrictionDAO.save(restrictionRequestMapper.toEntity(restriction)));
+    public RestrictionResponse createRestriction(RestrictionRequest restriction) {
+        // Se verifica descripción para no tener restricciones duplicadas
+        if (restrictionDAO.existsByDescription(restriction.getDescription())) {
+            throw new IllegalArgumentException("A restriction with description '" + restriction.getDescription() + "' already exists.");
         }
+
+        // Si no está duplicado, creamos la restricción
+        Restriction entity = restrictionRequestMapper.toEntity(restriction);
+        return restrictionResponseMapper.toResponse(restrictionDAO.save(entity));
     }
 
     /**
@@ -72,4 +73,18 @@ public class RestrictionServiceImpl implements RestrictionService {
         restrictionDAO.deleteById(id);
         return restrictionResponseMapper.toResponse(foundRestriction);
     }
+
+    @Override
+    @Transactional
+    public RestrictionResponse updateRestriction(Long id, RestrictionRequest request) {
+        Restriction restriction = restrictionDAO.findById(id);
+        if (restriction.getDescription() != null) restriction.setDescription(request.getDescription());
+        return restrictionResponseMapper.toResponse(restrictionDAO.save(restriction));
+    }
+
+
+
+
+
+
 }

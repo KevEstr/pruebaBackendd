@@ -10,4 +10,5 @@ public interface RestrictionService {
     RestrictionResponse createRestriction(RestrictionRequest restriction);
     RestrictionResponse findRestrictionById(Long id) ;
     RestrictionResponse deleteRestriction(Long id);
+    RestrictionResponse updateRestriction(Long id, RestrictionRequest request);
 }

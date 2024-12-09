@@ -3,6 +3,8 @@ package co.edu.udea.salasinfo.persistence.jpa;
 import co.edu.udea.salasinfo.exceptions.EntityNotFoundException;
 import co.edu.udea.salasinfo.model.Implement;
 import co.edu.udea.salasinfo.model.Room;
+import co.edu.udea.salasinfo.model.RoomImplement;
+import co.edu.udea.salasinfo.persistence.ImplementDAO;
 import co.edu.udea.salasinfo.repository.ImplementRepository;
 import co.edu.udea.salasinfo.utils.enums.ImplementCondition;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,13 +32,15 @@ class ImplementJPATest {
 
     private Implement implement;
 
+    @Mock
+    private ImplementDAO implementDAO;
+
     @BeforeEach
     public void setUp() {
         implement = Implement.builder()
                 .id(1L)
                 .name("Projector")
-                .state(ImplementCondition.GOOD)
-                .rooms(Collections.emptyList())
+                .roomImplements(Collections.emptyList())
                 .build();
     }
 
@@ -88,7 +92,9 @@ class ImplementJPATest {
         room1.setId(1L);
         room1.setRoomName("Room A");
 
-        implement.setRooms(List.of(room1));
+        RoomImplement roomImplement = new RoomImplement(1L, room1, implement, "bueno");
+
+        implement.setRoomImplements(List.of(roomImplement));
         when(implementRepository.findById(1L)).thenReturn(Optional.of(implement));
 
         // Act
@@ -100,4 +106,34 @@ class ImplementJPATest {
         assertEquals(room1.getId(), rooms.get(0).getId());
         verify(implementRepository).findById(1L);
     }
+
+    @Test
+    void existsByName_ShouldReturnTrue_WhenNameExists() {
+        // Arrange
+        String name = "Projector";
+        when(implementRepository.existsByName(name)).thenReturn(true);  // Mock the repository call
+
+        // Act
+        boolean result = implementRepository.existsByName(name);
+
+        // Assert
+        assertTrue(result);
+        verify(implementRepository, times(1)).existsByName(name);
+    }
+
+    @Test
+    void existsByName_ShouldReturnFalse_WhenNameDoesNotExist() {
+        // Arrange
+        String name = "Whiteboard";
+        when(implementRepository.existsByName(name)).thenReturn(false);  // Mock the repository call
+
+        // Act
+        boolean result = implementRepository.existsByName(name);  // Call the method on the repository
+
+        // Assert
+        assertFalse(result);  // Verify that the result is false
+        verify(implementRepository, times(1)).existsByName(name);
+    }
+
+
 }

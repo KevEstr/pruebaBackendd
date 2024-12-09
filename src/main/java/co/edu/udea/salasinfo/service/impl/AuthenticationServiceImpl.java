@@ -66,7 +66,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new EmailAlreadyRegisteredException(request.getEmail());
         User user = registerRequestMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(roleDAO.findByRoleName(RoleName.USER));
+        user.setRole(roleDAO.findByRoleName(RoleName.Usuario));
         userRepository.save(user);
         return RegisterResponse.builder()
                 .message(

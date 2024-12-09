@@ -31,34 +31,34 @@ class RoleJPATest {
     public void setUp() {
         role = Role.builder()
                 .id(1L)
-                .roleName(RoleName.ADMIN)
+                .roleName(RoleName.Admin)
                 .build();
     }
 
     @Test
     void testFindByRoleName_Success() {
         // Arrange
-        when(roleRepository.findByRoleName(RoleName.ADMIN)).thenReturn(Optional.of(role));
+        when(roleRepository.findByRoleName(RoleName.Admin)).thenReturn(Optional.of(role));
 
         // Act
-        Role foundRole = roleJPA.findByRoleName(RoleName.ADMIN);
+        Role foundRole = roleJPA.findByRoleName(RoleName.Admin);
 
         // Assert
         assertNotNull(foundRole);
         assertEquals(role.getId(), foundRole.getId());
         assertEquals(role.getRoleName(), foundRole.getRoleName());
-        verify(roleRepository).findByRoleName(RoleName.ADMIN);
+        verify(roleRepository).findByRoleName(RoleName.Admin);
     }
 
     @Test
     void testFindByRoleName_NotFound() {
         // Arrange
-        when(roleRepository.findByRoleName(RoleName.ADMIN)).thenReturn(Optional.empty());
+        when(roleRepository.findByRoleName(RoleName.Admin)).thenReturn(Optional.empty());
 
         // Act & Assert
-        EntityNotFoundException thrown = assertThrows(EntityNotFoundException.class, () -> roleJPA.findByRoleName(RoleName.ADMIN));
+        EntityNotFoundException thrown = assertThrows(EntityNotFoundException.class, () -> roleJPA.findByRoleName(RoleName.Admin));
 
-        assertEquals("Entity of 'Role' type searched with 'ADMIN' not found", thrown.getMessage());
-        verify(roleRepository).findByRoleName(RoleName.ADMIN);
+        assertEquals("Entity of 'Role' type searched with 'Admin' not found", thrown.getMessage());
+        verify(roleRepository).findByRoleName(RoleName.Admin);
     }
 }

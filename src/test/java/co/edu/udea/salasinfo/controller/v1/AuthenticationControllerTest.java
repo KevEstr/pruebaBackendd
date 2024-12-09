@@ -48,7 +48,7 @@ class AuthenticationControllerTest {
     void testLogin_Success() throws Exception {
         // Arrange
         AuthenticationRequest request = new AuthenticationRequest("test@example.com", "password123");
-        AuthenticationResponse response = new AuthenticationResponse("token123", RoleName.USER, "id");
+        AuthenticationResponse response = new AuthenticationResponse("token123", RoleName.Usuario, "id");
 
         when(authenticationService.authenticate(any(AuthenticationRequest.class))).thenReturn(response);
 
@@ -59,7 +59,7 @@ class AuthenticationControllerTest {
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.token").value("token123"))
-                .andExpect(jsonPath("$.role").value(RoleName.USER.name()));
+                .andExpect(jsonPath("$.role").value(RoleName.Usuario.name()));
     }
 
     @Test

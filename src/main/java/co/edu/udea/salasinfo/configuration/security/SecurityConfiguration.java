@@ -35,8 +35,16 @@ public class SecurityConfiguration {
     @Value("${allowed-origins}")
     private List<String> allowedOrigins;
 
-    @Value("${public-endpoints}")
-    private List<String> authWhitelist;
+    private static final List<String> AUTH_WHITELIST = List.of(
+            // -- Swagger UI
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "static/**",
+            "/v1/auth/*",
+            "/v1/home"
+    );
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -49,7 +57,7 @@ public class SecurityConfiguration {
                                 && request.getRequestURI().startsWith("/secure/")) //NOSONAR not used in secure contexts
                 )
                 .authorizeHttpRequests(auth -> {
-                    authWhitelist.forEach(uri ->
+                    AUTH_WHITELIST.forEach(uri ->
                             auth.requestMatchers(mvc.pattern(uri)).permitAll()
                     );
                     auth.anyRequest().authenticated();

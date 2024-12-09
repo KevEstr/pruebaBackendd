@@ -28,15 +28,7 @@ public class Implement implements Serializable {
     @Column(name = "implementName")
     private String name;
 
-    @Column(name = "state")
-    private ImplementCondition state;
-
     @JsonIgnore
-    @ManyToMany(
-            targetEntity = Room.class,
-            mappedBy = "implementList",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
-    )
-    private List<Room> rooms;
+    @OneToMany(mappedBy = "implement", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RoomImplement> roomImplements;
 }
