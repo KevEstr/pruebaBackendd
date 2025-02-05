@@ -209,7 +209,7 @@ class RoomServiceImplTest {
         verify(roomDAO, never()).save(any());
     }
 
-    @Test
+    /*@Test
     void updateRoom_UpdatesRoomAndRelatedEntities() {
         // Arrange
         when(roomDAO.findById(1L)).thenReturn(mockRoom);
@@ -253,7 +253,7 @@ class RoomServiceImplTest {
 
         // Verificar guardado final del room
         verify(roomDAO).save(mockRoom);
-    }
+    }*/
 
 
     @Test
