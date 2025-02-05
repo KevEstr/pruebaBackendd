@@ -17,8 +17,8 @@ import java.util.List;
 public interface RoomService {
     List<RoomResponse> findAll(RoomFilter filter);
     SpecificRoomResponse findById(Long id) ;
-    RoomResponse createRoom(RoomRequest room) ;
-    RoomResponse updateRoom(Long id, RoomRequest room) ;
+    SpecificRoomResponse createRoom(RoomRequest room) ;
+    SpecificRoomResponse updateRoom(Long id, RoomRequest room) ;
     RoomResponse deleteRoom(Long id) ;
     List<RoomResponse> findFreeAt(LocalDateTime date);
     List<RoomScheduleResponse> findRoomSchedule(Long id);

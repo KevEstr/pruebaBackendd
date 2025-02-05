@@ -57,7 +57,7 @@ class AuthenticationServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        mockRole = RoleName.USER;
+        mockRole = RoleName.Usuario;
         Role userRole = new Role(1L, mockRole);
 
         mockUser = User.builder()
@@ -134,8 +134,8 @@ class AuthenticationServiceImplTest {
         when(registerRequestMapper.toEntity(request)).thenReturn(mockUser);
 
         // Mock role retrieval
-        Role role = new Role(1L, RoleName.USER);
-        when(roleDAO.findByRoleName(RoleName.USER)).thenReturn(role);
+        Role role = new Role(1L, RoleName.Usuario);
+        when(roleDAO.findByRoleName(RoleName.Usuario)).thenReturn(role);
 
         // Mock password encoding
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded_password");

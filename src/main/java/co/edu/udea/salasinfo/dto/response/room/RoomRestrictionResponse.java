@@ -1,5 +1,6 @@
 package co.edu.udea.salasinfo.dto.response.room;
 
+import co.edu.udea.salasinfo.dto.response.RestrictionResponse;
 import lombok.*;
 
 @Data
@@ -11,5 +12,5 @@ import lombok.*;
 public class RoomRestrictionResponse {
     // Attributes
     private Integer id;
-    private String description;
+    private RestrictionResponse restriction;
 }

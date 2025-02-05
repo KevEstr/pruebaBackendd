@@ -61,7 +61,7 @@ public class ReservationController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     @PostMapping("/class")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MONITOR')")
+    @PreAuthorize("hasAnyRole('Admin', 'Monitor')")
     public ResponseEntity<List<ReservationResponse>> createClass(@RequestBody @Valid ClassReservationRequest reservation) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.saveClass(reservation));
     }
@@ -84,7 +84,7 @@ public class ReservationController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationResponse.class)))),
     })
     @GetMapping("/rejected")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('Admin')")
     public ResponseEntity<List<ReservationResponse>> findRefused() {
         return ResponseEntity.ok(reservationService.findStated(RStatus.REJECTED));
     }
@@ -121,7 +121,7 @@ public class ReservationController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     })
     @PatchMapping("/{id}/accept")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('Admin')")
     public ResponseEntity<ReservationResponse> acceptReservation(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.updateState(id, RStatus.ACCEPTED));
     }
@@ -136,7 +136,7 @@ public class ReservationController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
     })
     @PatchMapping("/{id}/reject")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('Admin')")
     public ResponseEntity<ReservationResponse> rejectReservation(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.updateState(id, RStatus.REJECTED));
     }

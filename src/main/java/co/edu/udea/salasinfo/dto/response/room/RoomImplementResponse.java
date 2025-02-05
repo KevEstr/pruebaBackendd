@@ -1,5 +1,7 @@
 package co.edu.udea.salasinfo.dto.response.room;
 
+import co.edu.udea.salasinfo.dto.response.ImplementResponse;
+import co.edu.udea.salasinfo.utils.enums.ImplementCondition;
 import lombok.*;
 
 @Data
@@ -8,8 +10,9 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
+@Builder
 public class RoomImplementResponse {
-    private Integer id;
-    private String name;
+    private Long id;
+    private ImplementResponse implement;
     private String state;
 }

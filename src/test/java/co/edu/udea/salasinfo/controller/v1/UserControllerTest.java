@@ -50,9 +50,9 @@ class UserControllerTest {
 
     // Test for getting all users with an admin role
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "Admin")
     void getAllUsers_success() throws Exception {
-        UserResponse userResponse = new UserResponse("1", "John", "Doe", "john.doe@example.com", new RoleResponse(1L, RoleName.USER));
+        UserResponse userResponse = new UserResponse("1", "John", "Doe", "john.doe@example.com", new RoleResponse(1L, RoleName.Usuario));
         List<UserResponse> users = Collections.singletonList(userResponse);
 
         when(userService.findAll()).thenReturn(users);
@@ -68,7 +68,7 @@ class UserControllerTest {
     // Test for getting a user by ID (success)
     @Test
     void getUserById_success() throws Exception {
-        UserResponse userResponse = new UserResponse("1", "John", "Doe", "john.doe@example.com", new RoleResponse(1L, RoleName.USER));
+        UserResponse userResponse = new UserResponse("1", "John", "Doe", "john.doe@example.com", new RoleResponse(1L, RoleName.Usuario));
 
         when(userService.findById("1")).thenReturn(userResponse);
 
@@ -93,10 +93,10 @@ class UserControllerTest {
 
     // Test for updating a user role (success)
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "Admin")
     void updateUserRole_success() throws Exception {
-        UserRoleRequest roleRequest = new UserRoleRequest(RoleName.ADMIN);
-        UserResponse updatedUser = new UserResponse("1", "John", "Doe", "john.doe@example.com", new RoleResponse(1L, RoleName.ADMIN));
+        UserRoleRequest roleRequest = new UserRoleRequest(RoleName.Admin);
+        UserResponse updatedUser = new UserResponse("1", "John", "Doe", "john.doe@example.com", new RoleResponse(1L, RoleName.Admin));
 
         when(userService.updateRole("1", roleRequest.getRoleName())).thenReturn(updatedUser);
 
@@ -108,9 +108,9 @@ class UserControllerTest {
 
     // Test for an updating user role (not found)
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "Admin")
     void updateUserRole_userNotFound() throws Exception {
-        UserRoleRequest roleRequest = new UserRoleRequest(RoleName.ADMIN);
+        UserRoleRequest roleRequest = new UserRoleRequest(RoleName.Admin);
 
         when(userService.updateRole("1", roleRequest.getRoleName())).thenThrow(new EntityNotFoundException(User.class.getSimpleName(), "1"));
 
