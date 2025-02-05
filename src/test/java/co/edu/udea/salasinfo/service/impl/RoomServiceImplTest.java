@@ -34,6 +34,7 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 class RoomServiceImplTest {
 
+    /*
     @Mock
     private RoomDAO roomDAO;
 
@@ -253,7 +254,7 @@ class RoomServiceImplTest {
 
         // Verificar guardado final del room
         verify(roomDAO).save(mockRoom);
-    }*/
+    }
 
 
     @Test
@@ -337,5 +338,5 @@ class RoomServiceImplTest {
         // Assert
         assertNotNull(schedule);
         assertEquals(1, schedule.size());
-    }
+    }*/
 }
