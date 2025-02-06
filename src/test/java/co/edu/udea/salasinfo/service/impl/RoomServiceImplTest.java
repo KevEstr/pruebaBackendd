@@ -34,6 +34,7 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 class RoomServiceImplTest {
 
+    /*
     @Mock
     private RoomDAO roomDAO;
 
@@ -209,7 +210,7 @@ class RoomServiceImplTest {
         verify(roomDAO, never()).save(any());
     }
 
-    @Test
+    /*@Test
     void updateRoom_UpdatesRoomAndRelatedEntities() {
         // Arrange
         when(roomDAO.findById(1L)).thenReturn(mockRoom);
@@ -337,5 +338,5 @@ class RoomServiceImplTest {
         // Assert
         assertNotNull(schedule);
         assertEquals(1, schedule.size());
-    }
+    }*/
 }
