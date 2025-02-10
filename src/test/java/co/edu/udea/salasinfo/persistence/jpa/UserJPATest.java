@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserJPATest {
-/*
     @InjectMocks
     private UserJPA userJPA;
 
@@ -124,6 +123,4 @@ class UserJPATest {
         verify(userRepository).existsById("1");
     }
 
-
- */
 }
