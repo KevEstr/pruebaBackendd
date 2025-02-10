@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +32,7 @@ public class ApplicationJPA implements ApplicationDAO {
         Application application = findById(id);
         return application.getRoomApplications().stream()
                 .map(RoomApplication::getRoom)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

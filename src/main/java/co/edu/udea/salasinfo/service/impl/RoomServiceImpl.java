@@ -7,7 +7,6 @@ import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
 import co.edu.udea.salasinfo.mapper.request.RoomRequestMapper;
-import co.edu.udea.salasinfo.mapper.response.RoomImplementResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomScheduleResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.SpecificRoomResponseMapper;
@@ -18,18 +17,14 @@ import co.edu.udea.salasinfo.utils.enums.RStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * It's the rooms data accessor, which saves and retrieves rooms
@@ -50,9 +45,6 @@ public class RoomServiceImpl implements RoomService {
     private final RoomImplementDAO roomImplementDAO;
     private final RoomApplicationDAO roomApplicationDAO;
     private final RoomRestrictionDAO roomRestrictionDAO;
-
-    @Autowired
-    private RoomImplementResponseMapper roomImplementResponseMapper;
 
     /**
      * Retrieves a List of Rooms from the Database
@@ -82,7 +74,7 @@ public class RoomServiceImpl implements RoomService {
     /**
      * Receives a room, creates the room's id using the building, number and sub room, then save it in the database.
      *
-     * @param room A room object with the needed attributes.
+     * @param roomRequest A room object with the needed attributes.
      * @return A response entity with a 200 as status code and the saved room as body if there's a success and a 400 if something is wrong.
      */
     @Override
@@ -152,8 +144,8 @@ public class RoomServiceImpl implements RoomService {
                         roomRestriction.setRoom(finalRoom);
                         roomRestriction.setRestriction(restriction);
                         return roomRestriction;
-                    })
-                    .collect(Collectors.toList()));
+                    }).toList()
+            );
         }
 
         // Refrescar la entidad Room para cargar relaciones
@@ -171,7 +163,7 @@ public class RoomServiceImpl implements RoomService {
     /**
      * Updates the room of the given room's id with using the changes of the given room object.
      *
-     * @param room The room that contain the changes.
+     * @param roomRequest The room that contain the changes.
      * @return A response entity with 200 as status code and the updated room as body
      * or a response entity with 404 as status code.
      */
@@ -255,8 +247,7 @@ public class RoomServiceImpl implements RoomService {
                         roomRestriction.setRoom(foundRoom);
                         roomRestriction.setRestriction(restriction);
                         return roomRestriction;
-                    })
-                    .collect(Collectors.toList()));
+                    }).toList());
         }
 
         // Guardar los cambios
@@ -266,7 +257,6 @@ public class RoomServiceImpl implements RoomService {
         // Devolver la respuesta en el formato esperado
         return specificRoomResponseMapper.toResponse(updatedRoom);
     }
-
 
 
     /**
@@ -364,7 +354,6 @@ public class RoomServiceImpl implements RoomService {
         }
 
         // Formatear las horas disponibles a "H:mm"
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
         return availableHours.stream()
                 .map(FreeScheduleResponse::new)
                 .toList();

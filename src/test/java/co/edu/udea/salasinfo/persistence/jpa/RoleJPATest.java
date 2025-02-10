@@ -18,7 +18,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RoleJPATest {
-/*
     @InjectMocks
     private RoleJPA roleJPA;
 
@@ -61,6 +60,4 @@ class RoleJPATest {
         assertEquals("Entity of 'Role' type searched with 'Admin' not found", thrown.getMessage());
         verify(roleRepository).findByRoleName(RoleName.Admin);
     }
-
- */
 }
