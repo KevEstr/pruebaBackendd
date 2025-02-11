@@ -184,8 +184,6 @@
 							<excludes>
 								<exclude>**/*Lombok*</exclude>
 								<exclude>**/*mapper*</exclude>
-								<exclude>**/dto/**/*</exclude>
-								<exclude>**/configuration/**/*</exclude>
 							</excludes>
 						</configuration>
 					</execution>
