@@ -204,4 +204,100 @@ class ApplicationServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> applicationService.createApplication(request));
     }
 
+    @Test
+    void updateApplication_Success() {
+        // Arrange
+        Long id = 1L;
+        ApplicationRequest request = new ApplicationRequest();
+        request.setName("Updated Application");
+
+        Application existingApplication = new Application(id, "Old Application", null);
+        Application updatedApplication = new Application(id, "Updated Application", null);
+        ApplicationResponse expectedResponse = new ApplicationResponse(id, "Updated Application");
+
+        when(applicationDAO.findById(id)).thenReturn(existingApplication);
+        when(applicationDAO.existsByName(request.getName())).thenReturn(false);
+        when(applicationDAO.save(any())).thenReturn(updatedApplication);
+        when(applicationResponseMapper.toResponse(updatedApplication)).thenReturn(expectedResponse);
+
+        // Act
+        ApplicationResponse response = applicationService.updateApplication(id, request);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(expectedResponse, response);
+    }
+
+    @Test
+    void updateApplication_ThrowsExceptionWhenNameExists() {
+        // Arrange
+        Long id = 1L;
+        ApplicationRequest request = new ApplicationRequest();
+        request.setName("Existing Application");
+        Application existingApplication = new Application(id, "Old Application", null);
+
+        when(applicationDAO.findById(id)).thenReturn(existingApplication);
+        when(applicationDAO.existsByName(request.getName())).thenReturn(true);
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> applicationService.updateApplication(id, request));
+        assertEquals("An application with the name 'Existing Application' already exists.", exception.getMessage());
+    }
+
+    @Test
+    void deleteApplication_Success() {
+        // Arrange
+        Long id = 1L;
+        Application application = new Application(id, "Application to Delete", null);
+        ApplicationResponse expectedResponse = new ApplicationResponse(id, "Application to Delete");
+
+        when(applicationDAO.findById(id)).thenReturn(application);
+        when(applicationResponseMapper.toResponse(application)).thenReturn(expectedResponse);
+
+        // Act
+        ApplicationResponse response = applicationService.deleteApplication(id);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(expectedResponse, response);
+        verify(applicationDAO).deleteById(id);
+    }
+
+    @Test
+    void findAll_ReturnsApplications() {
+        // Arrange
+        List<Application> applications = List.of(new Application(1L, "App1", null), new Application(2L, "App2", null));
+        List<ApplicationResponse> expectedResponses = List.of(new ApplicationResponse(1L, "App1"), new ApplicationResponse(2L, "App2"));
+
+        when(applicationDAO.findAll()).thenReturn(applications);
+        when(applicationResponseMapper.toResponses(applications)).thenReturn(expectedResponses);
+
+        // Act
+        List<ApplicationResponse> responses = applicationService.findAll();
+
+        // Assert
+        assertNotNull(responses);
+        assertEquals(2, responses.size());
+        assertEquals(expectedResponses, responses);
+    }
+
+    @Test
+    void findById_ReturnsApplication() {
+        // Arrange
+        Long id = 1L;
+        Application application = new Application(id, "App1", null);
+        ApplicationResponse expectedResponse = new ApplicationResponse(id, "App1");
+
+        when(applicationDAO.findById(id)).thenReturn(application);
+        when(applicationResponseMapper.toResponse(application)).thenReturn(expectedResponse);
+
+        // Act
+        ApplicationResponse response = applicationService.findById(id);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(expectedResponse, response);
+    }
+
+
 }

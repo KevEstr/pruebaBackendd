@@ -6,7 +6,6 @@ import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
 import co.edu.udea.salasinfo.mapper.request.ApplicationRequestMapper;
 import co.edu.udea.salasinfo.mapper.response.ApplicationResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomResponseMapper;
-import co.edu.udea.salasinfo.model.RoomApplication;
 import co.edu.udea.salasinfo.persistence.ApplicationDAO;
 import co.edu.udea.salasinfo.model.Application;
 import co.edu.udea.salasinfo.model.Room;

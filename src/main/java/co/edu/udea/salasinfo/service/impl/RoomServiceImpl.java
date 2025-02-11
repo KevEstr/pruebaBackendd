@@ -163,7 +163,7 @@ public class RoomServiceImpl implements RoomService {
     /**
      * Updates the room of the given room's id with using the changes of the given room object.
      *
-     * @param roomRequest The room that contain the changes.
+     * @param roomRequest The room that contains the changes.
      * @return A response entity with 200 as status code and the updated room as body
      * or a response entity with 404 as status code.
      */
