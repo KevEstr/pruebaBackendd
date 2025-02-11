@@ -1,15 +1,17 @@
 package co.edu.udea.salasinfo.service.impl;
 
+import co.edu.udea.salasinfo.dto.request.RoomRequest;
 import co.edu.udea.salasinfo.dto.response.room.FreeScheduleResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
 import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
+import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
+import co.edu.udea.salasinfo.mapper.request.RoomRequestMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomScheduleResponseMapper;
-import co.edu.udea.salasinfo.model.Reservation;
-import co.edu.udea.salasinfo.model.ReservationState;
-import co.edu.udea.salasinfo.model.Room;
-import co.edu.udea.salasinfo.persistence.ReservationDAO;
-import co.edu.udea.salasinfo.persistence.RoomDAO;
+import co.edu.udea.salasinfo.mapper.response.SpecificRoomResponseMapper;
+import co.edu.udea.salasinfo.model.*;
+import co.edu.udea.salasinfo.persistence.*;
+import co.edu.udea.salasinfo.utils.enums.ImplementCondition;
 import co.edu.udea.salasinfo.utils.enums.RStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,31 @@ class RoomServiceImplTest {
 
     @Mock
     private RoomResponseMapper roomResponseMapper;
+
+    @Mock
+    private RoomRequestMapper roomRequestMapper;
+
+    @Mock
+    private ImplementDAO implementDAO;
+
+    @Mock
+    private RestrictionDAO restrictionDAO;
+
+    @Mock
+    private ApplicationDAO applicationDAO;
+
+    @Mock
+    private RoomImplementDAO roomImplementDAO;
+
+    @Mock
+    private RoomApplicationDAO roomApplicationDAO;
+
+    @Mock
+    private RoomRestrictionDAO roomRestrictionDAO;
+
+
+    @Mock
+    private SpecificRoomResponseMapper specificRoomResponseMapper;
 
     @Mock
     private RoomScheduleResponseMapper roomScheduleResponseMapper;
@@ -147,4 +174,49 @@ class RoomServiceImplTest {
         assertFalse(freeHours.stream().anyMatch(hour -> hour.getHour().equals(LocalTime.of(15, 0)))); // Second reservation
         verify(roomDAO, times(1)).findById(ROOM_ID);
     }
+
+    @Test
+    void createRoom_ShouldCreateRoomSuccessfully_WhenValidRequestIsProvided() {
+        RoomRequest roomRequest = new RoomRequest();
+        roomRequest.setBuilding("1");
+        roomRequest.setRoomNum("101");
+        roomRequest.setSubRoom(1);
+        roomRequest.setImplementIds(List.of(1L));
+        roomRequest.setImplementStates(List.of(ImplementCondition.Bueno));
+        roomRequest.setSoftwareIds(List.of(1L));
+        roomRequest.setSoftwareVersions(List.of("1.0"));
+        roomRequest.setRestrictionIds(List.of(1L));
+
+        Long expectedRoomId = 11011L;
+        Room mappedRoom = new Room();
+        mappedRoom.setId(expectedRoomId);
+
+        Implement mockImplement = new Implement();
+        mockImplement.setId(1L);
+
+        Application mockApplication = new Application();
+        mockApplication.setId(1L);
+
+        Restriction mockRestriction = new Restriction();
+        mockRestriction.setId(1L);
+
+        when(roomDAO.existsById(expectedRoomId)).thenReturn(false);
+        when(roomRequestMapper.toEntity(roomRequest)).thenReturn(mappedRoom);
+        when(implementDAO.findById(1L)).thenReturn(mockImplement);
+        when(applicationDAO.findById(1L)).thenReturn(mockApplication);
+        when(restrictionDAO.findAllById(List.of(1L))).thenReturn(List.of(mockRestriction));
+        when(roomDAO.save(any(Room.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(roomDAO.findById(expectedRoomId)).thenReturn(mappedRoom);
+        when(specificRoomResponseMapper.toResponse(any(Room.class))).thenReturn(new SpecificRoomResponse());
+
+        SpecificRoomResponse response = roomService.createRoom(roomRequest);
+
+        assertNotNull(response);
+        verify(roomDAO, times(2)).save(any(Room.class));
+        verify(roomDAO, times(1)).findById(expectedRoomId);
+        verify(implementDAO, times(1)).findById(1L);
+        verify(applicationDAO, times(1)).findById(1L);
+        verify(restrictionDAO, times(1)).findAllById(List.of(1L));
+    }
+
 }
