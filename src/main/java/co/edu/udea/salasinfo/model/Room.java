@@ -1,9 +1,6 @@
 package co.edu.udea.salasinfo.model;
 
-import co.edu.udea.salasinfo.dto.response.room.RoomApplicationResponse;
-import co.edu.udea.salasinfo.dto.response.room.RoomImplementResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -18,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@ToString
 @Table(name = "room")
 public class Room implements Serializable {
     @Id

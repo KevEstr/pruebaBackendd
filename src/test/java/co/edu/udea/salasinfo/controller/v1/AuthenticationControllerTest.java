@@ -36,6 +36,10 @@ class AuthenticationControllerTest {
     @MockBean
     JwtService jwtService;
 
+    private static final String MOCK_TOKEN = "token123";
+    private static final String MOCK_PASSWORD = "password123";
+    private static final String MOCK_EMAIL = "john.doe@example.com";
+
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -47,8 +51,8 @@ class AuthenticationControllerTest {
     @Test
     void testLogin_Success() throws Exception {
         // Arrange
-        AuthenticationRequest request = new AuthenticationRequest("test@example.com", "password123");
-        AuthenticationResponse response = new AuthenticationResponse("token123", RoleName.Usuario, "id");
+        AuthenticationRequest request = new AuthenticationRequest(MOCK_EMAIL, MOCK_PASSWORD);
+        AuthenticationResponse response = new AuthenticationResponse(MOCK_TOKEN, RoleName.Usuario, "id");
 
         when(authenticationService.authenticate(any(AuthenticationRequest.class))).thenReturn(response);
 
@@ -58,7 +62,7 @@ class AuthenticationControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.token").value("token123"))
+                .andExpect(jsonPath("$.token").value(MOCK_TOKEN))
                 .andExpect(jsonPath("$.role").value(RoleName.Usuario.name()));
     }
 
@@ -77,7 +81,7 @@ class AuthenticationControllerTest {
     @Test
     void testRegister_Success() throws Exception {
         // Arrange
-        RegisterRequest request = new RegisterRequest("John", "Doe", "john.doe@example.com", "password123");
+        RegisterRequest request = new RegisterRequest("John", "Doe", MOCK_EMAIL, MOCK_PASSWORD);
         RegisterResponse response = new RegisterResponse("User registered successfully");
 
         when(authenticationService.register(any(RegisterRequest.class))).thenReturn(response);
@@ -106,7 +110,7 @@ class AuthenticationControllerTest {
     @Test
     void testRegister_Conflict() throws Exception {
         // Arrange
-        RegisterRequest request = new RegisterRequest("John", "Doe", "john.doe@example.com", "password123");
+        RegisterRequest request = new RegisterRequest("John", "Doe", MOCK_EMAIL, MOCK_PASSWORD);
 
         when(authenticationService.register(any(RegisterRequest.class))).thenThrow(new EmailAlreadyRegisteredException(request.getEmail()));
 
