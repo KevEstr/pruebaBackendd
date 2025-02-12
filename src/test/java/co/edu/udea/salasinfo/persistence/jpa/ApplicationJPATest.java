@@ -144,4 +144,67 @@ class ApplicationJPATest {
         assertFalse(result);
         verify(applicationRepository, times(1)).existsByName(name);
     }
+
+    @Test
+    void deleteById_ShouldCallRepositoryDeleteById() {
+        // Arrange
+        Long applicationId = 1L;
+        doNothing().when(applicationRepository).deleteById(applicationId);
+
+        // Act
+        applicationJPA.deleteById(applicationId);
+
+        // Assert
+        verify(applicationRepository, times(1)).deleteById(applicationId);
+    }
+
+    @Test
+    void save_ShouldReturnSavedApplication() {
+        // Arrange
+        when(applicationRepository.save(any(Application.class))).thenReturn(mockApplication);
+
+        // Act
+        Application savedApplication = applicationJPA.save(mockApplication);
+
+        // Assert
+        assertNotNull(savedApplication);
+        assertEquals(mockApplication, savedApplication);
+        verify(applicationRepository, times(1)).save(mockApplication);
+    }
+
+    @Test
+    void findAllById_ShouldReturnListOfApplications() {
+        // Arrange
+        List<Long> applicationIds = List.of(1L, 2L);
+        Application application2 = Application.builder().id(2L).name("Another App").roomApplications(Collections.emptyList()).build();
+
+        List<Application> applications = List.of(mockApplication, application2);
+
+        when(applicationRepository.findAllById(applicationIds)).thenReturn(applications);
+
+        // Act
+        List<Application> result = applicationJPA.findAllById(applicationIds);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(applications, result);
+        verify(applicationRepository, times(1)).findAllById(applicationIds);
+    }
+
+    @Test
+    void findAllById_ShouldReturnEmptyList_WhenNoApplicationsFound() {
+        // Arrange
+        List<Long> applicationIds = List.of(100L, 200L);
+        when(applicationRepository.findAllById(applicationIds)).thenReturn(Collections.emptyList());
+
+        // Act
+        List<Application> result = applicationJPA.findAllById(applicationIds);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(applicationRepository, times(1)).findAllById(applicationIds);
+    }
+
 }

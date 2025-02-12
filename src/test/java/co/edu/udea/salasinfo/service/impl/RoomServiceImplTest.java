@@ -219,4 +219,65 @@ class RoomServiceImplTest {
         verify(restrictionDAO, times(1)).findAllById(List.of(1L));
     }
 
+    @Test
+    void updateRoom_ShouldUpdateRoomSuccessfully_WhenValidRequestIsProvided() {
+        // Given
+        RoomRequest roomRequest = new RoomRequest();
+        roomRequest.setRoomName("Updated Room");
+        roomRequest.setComputerAmount(15);
+        roomRequest.setImplementIds(List.of(1L));
+        roomRequest.setImplementStates(List.of(ImplementCondition.Malo));
+        roomRequest.setSoftwareIds(List.of(1L));
+        roomRequest.setSoftwareVersions(List.of("2.0"));
+        roomRequest.setRestrictionIds(List.of(1L));
+
+        Implement mockImplement = new Implement();
+        mockImplement.setId(1L);
+
+        Application mockApplication = new Application();
+        mockApplication.setId(1L);
+
+        Restriction mockRestriction = new Restriction();
+        mockRestriction.setId(1L);
+
+        Room foundRoom = new Room();
+        foundRoom.setId(ROOM_ID);
+        foundRoom.setRoomName("Old Room");
+        foundRoom.setComputerAmount(10);
+        foundRoom.setImplementList(Collections.emptyList());
+        foundRoom.setRoomApplications(Collections.emptyList());
+        foundRoom.setRestrictions(Collections.emptyList());
+
+        when(roomDAO.findById(ROOM_ID)).thenReturn(foundRoom);
+        when(implementDAO.findById(1L)).thenReturn(mockImplement);
+        when(applicationDAO.findById(1L)).thenReturn(mockApplication);
+        when(restrictionDAO.findAllById(List.of(1L))).thenReturn(List.of(mockRestriction));
+        when(roomDAO.save(any(Room.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(roomDAO.findById(ROOM_ID)).thenReturn(foundRoom);
+        when(specificRoomResponseMapper.toResponse(any(Room.class))).thenReturn(new SpecificRoomResponse());
+
+        // When
+        SpecificRoomResponse response = roomService.updateRoom(ROOM_ID, roomRequest);
+
+        // Then
+        assertNotNull(response);
+        assertEquals("Updated Room", foundRoom.getRoomName());
+        assertEquals(15, foundRoom.getComputerAmount());
+        assertEquals(1, foundRoom.getImplementList().size());
+        assertEquals(ImplementCondition.Malo.toString(), foundRoom.getImplementList().get(0).getState());
+        assertEquals(1, foundRoom.getRoomApplications().size());
+        assertEquals("2.0", foundRoom.getRoomApplications().get(0).getVersion());
+        assertEquals(1, foundRoom.getRestrictions().size());
+
+        verify(roomDAO, times(2)).findById(ROOM_ID);
+        verify(roomDAO, times(1)).save(foundRoom);
+        verify(implementDAO, times(1)).findById(1L);
+        verify(applicationDAO, times(1)).findById(1L);
+        verify(restrictionDAO, times(1)).findAllById(List.of(1L));
+        verify(roomImplementDAO, times(1)).deleteAll(anyList());
+        verify(roomApplicationDAO, times(1)).deleteAll(anyList());
+        verify(roomRestrictionDAO, times(1)).deleteAllByRoomId(ROOM_ID);
+    }
+
+
 }

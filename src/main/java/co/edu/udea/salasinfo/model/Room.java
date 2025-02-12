@@ -15,7 +15,6 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@ToString
 @Table(name = "room")
 public class Room implements Serializable {
     @Id
