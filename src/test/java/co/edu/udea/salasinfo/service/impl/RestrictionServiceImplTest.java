@@ -149,4 +149,39 @@ class RestrictionServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> restrictionService.deleteRestriction(1L));
         verify(restrictionDAO, never()).deleteById(anyLong());
     }
+
+    @Test
+    void updateRestriction_ShouldUpdateSuccessfully_WhenValidRequestProvided() {
+        // Given
+        Long restrictionId = 1L;
+        RestrictionRequest request = new RestrictionRequest();
+        request.setDescription("No drinks in rooms");
+
+        Restriction existingRestriction = new Restriction();
+        existingRestriction.setId(restrictionId);
+        existingRestriction.setDescription("No food in rooms");
+
+        Restriction updatedRestriction = new Restriction();
+        updatedRestriction.setId(restrictionId);
+        updatedRestriction.setDescription("No drinks in rooms");
+
+        RestrictionResponse updatedResponse = new RestrictionResponse();
+        updatedResponse.setId(restrictionId);
+        updatedResponse.setDescription("No drinks in rooms");
+
+        when(restrictionDAO.findById(restrictionId)).thenReturn(existingRestriction);
+        when(restrictionDAO.save(any(Restriction.class))).thenReturn(updatedRestriction);
+        when(restrictionResponseMapper.toResponse(any(Restriction.class))).thenReturn(updatedResponse);
+
+        // When
+        RestrictionResponse response = restrictionService.updateRestriction(restrictionId, request);
+
+        // Then
+        assertNotNull(response);
+        assertEquals("No drinks in rooms", response.getDescription());
+
+        verify(restrictionDAO, times(1)).findById(restrictionId);
+        verify(restrictionDAO, times(1)).save(existingRestriction);
+        verify(restrictionResponseMapper, times(1)).toResponse(updatedRestriction);
+    }
 }
