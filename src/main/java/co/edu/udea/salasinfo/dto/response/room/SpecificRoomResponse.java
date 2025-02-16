@@ -20,7 +20,6 @@ public class SpecificRoomResponse {
     private Integer subRoom;
     private List<RoomApplicationResponse> software;
     private List<RoomRestrictionResponse> restrictions;
-    @JsonProperty("implements")
-    private List<RoomImplementResponse> implementList;
+    private List<RoomImplementResponse> implementsList;
 
 }

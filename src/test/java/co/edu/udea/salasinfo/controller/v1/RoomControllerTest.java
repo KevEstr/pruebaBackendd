@@ -150,7 +150,7 @@ class RoomControllerTest {
         roomResponse.setSubRoom(0);
         roomResponse.setSoftware(softwareResponses);
         roomResponse.setRestrictions(restrictionResponses);
-        roomResponse.setImplementList(implementResponses);
+        roomResponse.setImplementsList(implementResponses);
 
         when(roomService.createRoom(any(RoomRequest.class))).thenReturn(roomResponse);
 
@@ -266,7 +266,7 @@ class RoomControllerTest {
         roomResponse.setSubRoom(0);
         roomResponse.setSoftware(softwareResponses);
         roomResponse.setRestrictions(restrictionResponses);
-        roomResponse.setImplementList(implementResponses);
+        roomResponse.setImplementsList(implementResponses);
 
         when(roomService.updateRoom(eq(1L), any(RoomRequest.class))).thenReturn(roomResponse);
 

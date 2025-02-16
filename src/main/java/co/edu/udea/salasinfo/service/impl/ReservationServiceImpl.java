@@ -170,6 +170,13 @@ public class ReservationServiceImpl implements ReservationService {
             case SATURDAY -> DayOfWeek.SATURDAY;
         };
     }
+
+    @Override
+    public List<ReservationResponse> findByRoomId(Long roomId) {
+        List<Reservation> reservations = reservationDAO.findReservationsByRoomIdRoomId(roomId);
+        return reservationResponseMapper.toResponses(reservations);
+    }
+
 }
 
 

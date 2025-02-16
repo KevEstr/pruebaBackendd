@@ -23,6 +23,7 @@ public interface ReservationService {
 
     ReservationResponse updateState(Long id, RStatus state);
     List<ReservationResponse> findStated(RStatus state);
+    List<ReservationResponse> findByRoomId(Long roomId);
 
 }
 
