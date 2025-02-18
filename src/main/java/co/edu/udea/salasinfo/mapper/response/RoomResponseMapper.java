@@ -19,7 +19,7 @@ public interface RoomResponseMapper {
 
     @Mapping(source = "roomApplications", target = "software")
     @Mapping(source = "restrictions", target = "restrictions")
-    @Mapping(source = "implementList", target = "implementsList")
+    @Mapping(source = "implementsList", target = "implementsList")
     RoomResponse toResponse(Room room);
 
     List<RoomResponse> toResponses(List<Room> rooms);

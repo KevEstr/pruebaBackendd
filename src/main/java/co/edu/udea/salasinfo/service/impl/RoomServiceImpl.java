@@ -111,7 +111,7 @@ public class RoomServiceImpl implements RoomService {
                 roomImplementDAO.save(roomImplement);
                 roomImplementList.add(roomImplement);
             }
-            room.setImplementList(roomImplementList);
+            room.setImplementsList(roomImplementList);
         }
 
         // Guardar software con versión
@@ -185,8 +185,8 @@ public class RoomServiceImpl implements RoomService {
         }
 
         // Eliminar implementos antiguos
-        if (foundRoom.getImplementList() != null) {
-            roomImplementDAO.deleteAll(foundRoom.getImplementList());
+        if (foundRoom.getImplementsList() != null) {
+            roomImplementDAO.deleteAll(foundRoom.getImplementsList());
         }
 
         // Actualizar implementos con estado
@@ -206,7 +206,7 @@ public class RoomServiceImpl implements RoomService {
                 roomImplementDAO.save(roomImplement);
                 roomImplementList.add(roomImplement);
             }
-            foundRoom.setImplementList(roomImplementList);
+            foundRoom.setImplementsList(roomImplementList);
         }
 
         // Eliminar software antiguo
@@ -276,7 +276,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         // Limpiar relaciones con implementos
-        if (room.getImplementList() != null && !room.getImplementList().isEmpty()) {
+        if (room.getImplementsList() != null && !room.getImplementsList().isEmpty()) {
             roomImplementDAO.deleteAllByRoomId(room.getId()); // Borrar implementos relacionados
         }
 

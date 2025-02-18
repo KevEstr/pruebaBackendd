@@ -140,4 +140,21 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> rejectReservation(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.updateState(id, RStatus.REJECTED));
     }
+
+    @Operation(summary = "Find reservations by room ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = RestConstants.CODE_OK,
+                    description = "List of reservations found for the room",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationResponse.class)))),
+            @ApiResponse(responseCode = RestConstants.CODE_NOT_FOUND,
+                    description = "Room not found",
+                    content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    })
+    @GetMapping("/room/{roomId}")
+    @PreAuthorize("hasAnyRole('Admin')")
+    public ResponseEntity<List<ReservationResponse>> findByRoomId(@PathVariable Long roomId) {
+        List<ReservationResponse> reservations = reservationService.findByRoomId(roomId);
+        return ResponseEntity.ok(reservations);
+    }
+
 }
