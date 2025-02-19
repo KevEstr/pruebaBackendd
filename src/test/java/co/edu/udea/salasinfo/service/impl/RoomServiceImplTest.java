@@ -244,7 +244,7 @@ class RoomServiceImplTest {
         foundRoom.setId(ROOM_ID);
         foundRoom.setRoomName("Old Room");
         foundRoom.setComputerAmount(10);
-        foundRoom.setImplementList(Collections.emptyList());
+        foundRoom.setImplementsList(Collections.emptyList());
         foundRoom.setRoomApplications(Collections.emptyList());
         foundRoom.setRestrictions(Collections.emptyList());
 
@@ -263,8 +263,8 @@ class RoomServiceImplTest {
         assertNotNull(response);
         assertEquals("Updated Room", foundRoom.getRoomName());
         assertEquals(15, foundRoom.getComputerAmount());
-        assertEquals(1, foundRoom.getImplementList().size());
-        assertEquals(ImplementCondition.Malo.toString(), foundRoom.getImplementList().get(0).getState());
+        assertEquals(1, foundRoom.getImplementsList().size());
+        assertEquals(ImplementCondition.Malo.toString(), foundRoom.getImplementsList().get(0).getState());
         assertEquals(1, foundRoom.getRoomApplications().size());
         assertEquals("2.0", foundRoom.getRoomApplications().get(0).getVersion());
         assertEquals(1, foundRoom.getRestrictions().size());
