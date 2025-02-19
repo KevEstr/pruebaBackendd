@@ -100,4 +100,8 @@ public class RestConstants {
     public static final String SWAGGER_UPDATE_APPLICATION_SUMMARY = "Update application by ID";
     public static final String SWAGGER_UPDATE_APPLICATION_DESCRIPTION = "Update the application record identified by the given ID with the provided details.";
 
+    //Notification message
+    public static final String SWAGGER_FIND_ALL_NOTIFICATIONS_SUMMARY = "retrieve all notifications";
+    public static final String SWAGGER_FIND_ALL_NOTIFICATIONS_DESCRIPTION = "Search all notifications for an specific or for all admin";
+
 }
