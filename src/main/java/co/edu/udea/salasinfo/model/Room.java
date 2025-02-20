@@ -49,7 +49,7 @@ public class Room implements Serializable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<RoomImplement> implementList;
+    private List<RoomImplement> implementsList;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
     private List<Reservation> reservations;
