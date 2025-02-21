@@ -3,6 +3,8 @@ package co.edu.udea.salasinfo.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -11,7 +13,7 @@ import lombok.*;
 @Setter
 @Builder
 @Table(name = "roomrestriction")
-public class RoomRestriction {
+public class RoomRestriction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Identificador único

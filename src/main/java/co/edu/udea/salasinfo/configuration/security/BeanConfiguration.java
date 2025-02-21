@@ -3,6 +3,7 @@ package co.edu.udea.salasinfo.configuration.security;
 import co.edu.udea.salasinfo.exceptions.EntityNotFoundException;
 import co.edu.udea.salasinfo.repository.UserRepository;
 import co.edu.udea.salasinfo.utils.Constants;
+import co.edu.udea.salasinfo.utils.Generated;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @RequiredArgsConstructor
+@Generated
 public class BeanConfiguration {
     private final UserRepository userRepository;
 

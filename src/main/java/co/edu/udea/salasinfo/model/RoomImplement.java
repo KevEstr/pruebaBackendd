@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Builder
 @Table(name = "roomimplement")
 
-public class RoomImplement {
+public class RoomImplement implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

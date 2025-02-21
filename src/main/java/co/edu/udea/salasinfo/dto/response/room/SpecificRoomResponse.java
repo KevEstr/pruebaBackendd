@@ -1,6 +1,5 @@
 package co.edu.udea.salasinfo.dto.response.room;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;

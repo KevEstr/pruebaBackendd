@@ -4,6 +4,7 @@ package co.edu.udea.salasinfo.utils;
 import lombok.Getter;
 import lombok.Setter;
 
+@Generated
 public class TokenHolder {
     @Getter
     @Setter

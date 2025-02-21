@@ -1,10 +1,9 @@
 package co.edu.udea.salasinfo.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.io.Serializable;
 
 @Data
 @Entity
@@ -14,7 +13,7 @@ import lombok.*;
 @Setter
 @Builder
 @Table(name = "roomsoftware")
-public class RoomApplication {
+public class RoomApplication implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
