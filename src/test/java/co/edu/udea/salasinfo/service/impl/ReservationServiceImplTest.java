@@ -8,8 +8,11 @@ import co.edu.udea.salasinfo.mapper.request.ReservationRequestMapper;
 import co.edu.udea.salasinfo.mapper.response.ReservationResponseMapper;
 import co.edu.udea.salasinfo.model.Reservation;
 import co.edu.udea.salasinfo.model.ReservationState;
+import co.edu.udea.salasinfo.model.Room;
 import co.edu.udea.salasinfo.persistence.ReservationDAO;
 import co.edu.udea.salasinfo.persistence.ReservationStateDAO;
+import co.edu.udea.salasinfo.persistence.RoomDAO;
+import co.edu.udea.salasinfo.service.NotificationService;
 import co.edu.udea.salasinfo.utils.enums.RStatus;
 import co.edu.udea.salasinfo.utils.enums.ReservationType;
 import co.edu.udea.salasinfo.utils.enums.WeekDay;
@@ -47,10 +50,16 @@ class ReservationServiceImplTest {
     private ReservationStateDAO reservationStateDAO;
 
     @Mock
+    private RoomDAO roomDAO;
+
+    @Mock
     private ReservationResponseMapper reservationResponseMapper;
 
     @Mock
     private ReservationRequestMapper reservationRequestMapper;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
@@ -109,12 +118,22 @@ class ReservationServiceImplTest {
     @Test
     void saveSingleTimeReservation_CreatesOnceReservation() {
         // Arrange
+        final Long roomId = 19223L;
         ReservationRequest request = new ReservationRequest();
         request.setActivityName("Single Meeting");
         request.setActivityDescription("One-time meeting");
         request.setDate(LocalDate.now().plusDays(1));
         request.setStartsAt(LocalTime.now());
         request.setEndsAt(LocalTime.now().plusHours(1));
+        request.setRoomId(roomId);
+        Room mockRoom = Room.builder()
+                .id(roomId)
+                .subRoom(0)
+                .roomName("any")
+                .computerAmount(20)
+                .building("19")
+                .roomNum("223")
+                .build();
 
         mockReservation = new Reservation();
         mockReservation.setType(ReservationType.ONCE);
@@ -123,6 +142,7 @@ class ReservationServiceImplTest {
         when(reservationStateDAO.findByState(RStatus.PENDING)).thenReturn(new ReservationState());
         when(reservationDAO.save(any())).thenReturn(mockReservation);
         when(reservationResponseMapper.toResponse(any())).thenReturn(mockReservationResponse);
+        when(roomDAO.findById(any())).thenReturn(mockRoom);
 
         // Act
         ReservationResponse response = reservationService.saveSingleTimeReservation(request);
@@ -132,6 +152,7 @@ class ReservationServiceImplTest {
         assertEquals(mockReservationResponse, response);
         assertEquals(ReservationType.ONCE, mockReservation.getType());
         verify(reservationDAO).save(mockReservation);
+        verify(notificationService).save(any());
     }
 
     @Test

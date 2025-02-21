@@ -65,7 +65,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponse saveSingleTimeReservation(ReservationRequest reservation) {
         Reservation entity = reservationRequestMapper.toEntity(reservation);
-        Room room = roomDAO.findById(entity.getRoom().getId());
+        Room room = roomDAO.findById(reservation.getRoomId());
         entity.setType(ReservationType.ONCE);
         notificationService.save(
                 NotificationRequest

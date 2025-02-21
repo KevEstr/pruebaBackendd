@@ -20,14 +20,14 @@ public class NotificationSpec {
                 .and(hasUserId(filter.getUserId()));
     }
 
-    public static Specification<Notification> hasType(NotificationType type) {
+    private static Specification<Notification> hasType(NotificationType type) {
         return (root, query, criteriaBuilder) ->
                 type == null
                         ? criteriaBuilder.conjunction()
                         : criteriaBuilder.equal(root.get(NOTIFICATION_TYPE), type);
     }
 
-    public static Specification<Notification> hasUserId(String userId) {
+    private static Specification<Notification> hasUserId(String userId) {
         return (root, query, criteriaBuilder) ->
                 userId == null || userId.isEmpty()
                         ? criteriaBuilder.conjunction()
