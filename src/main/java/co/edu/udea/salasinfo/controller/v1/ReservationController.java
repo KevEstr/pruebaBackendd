@@ -126,6 +126,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.updateState(id, RStatus.ACCEPTED));
     }
 
+    @PatchMapping("/{id}/cancel")
+    @PreAuthorize("hasAnyRole('Admin')")
+    public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationService.updateState(id, RStatus.CANCELLED));
+    }
+
     @Operation(summary = "Changes the state of a reservation to rejected")
     @ApiResponses(value = {
             @ApiResponse(responseCode = RestConstants.CODE_OK,
@@ -155,6 +161,19 @@ public class ReservationController {
     public ResponseEntity<List<ReservationResponse>> findByRoomId(@PathVariable Long roomId) {
         List<ReservationResponse> reservations = reservationService.findByRoomId(roomId);
         return ResponseEntity.ok(reservations);
+    }
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = RestConstants.CODE_OK,
+                    description = "List of reservations found of the user",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReservationResponse.class)))),
+            @ApiResponse(responseCode = RestConstants.CODE_NOT_FOUND,
+                    description = "Reservations not found",
+                    content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ReservationResponse>> getReservationsByUserId(@PathVariable("userId") String userId) {
+        List<ReservationResponse> responses = reservationService.findByUserId(userId);
+        return ResponseEntity.ok(responses);
     }
 
 }

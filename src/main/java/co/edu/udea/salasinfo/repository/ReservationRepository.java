@@ -14,5 +14,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByType(ReservationType reservationType);
     List<Reservation> findReservationsByRoomId(Long roomId);
     boolean existsByStartsAtAndRoom(LocalDateTime startsAt, Room roomId);
+    List<Reservation> findByUserId(String userId);
+
 
 }

@@ -173,9 +173,21 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationResponse> findByRoomId(Long roomId) {
-        List<Reservation> reservations = reservationDAO.findReservationsByRoomIdRoomId(roomId);
+        List<Reservation> reservations = reservationDAO.findReservationsByRoomIdRoomId(roomId)
+                .stream()
+                .filter(reservation -> !reservation.getReservationState().getState().equals(RStatus.CANCELLED) && !reservation.getReservationState().getState().equals(RStatus.REJECTED))
+                .toList();
         return reservationResponseMapper.toResponses(reservations);
     }
+
+    @Override
+    public List<ReservationResponse> findByUserId(String userId) {
+        // Se utiliza el método definido en el DAO para filtrar las reservas por el customerId del usuario
+        List<Reservation> reservations = reservationDAO.findByUserId(userId);
+        // Mapea las entidades a DTOs
+        return reservationResponseMapper.toResponses(reservations);
+    }
+
 
 }
 
