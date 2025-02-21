@@ -1,10 +1,7 @@
 package co.edu.udea.salasinfo.service.impl;
 
 import co.edu.udea.salasinfo.dto.request.RoomRequest;
-import co.edu.udea.salasinfo.dto.response.room.FreeScheduleResponse;
-import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
-import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
-import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
+import co.edu.udea.salasinfo.dto.response.room.*;
 import co.edu.udea.salasinfo.mapper.request.RoomRequestMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomScheduleResponseMapper;
@@ -131,10 +128,17 @@ class RoomServiceImplTest {
     void findFreeRoomSchedule_ShouldReturnAvailableHours_WhenRoomHasReservations() {
         when(roomDAO.findById(ROOM_ID)).thenReturn(room);
 
-        List<FreeScheduleResponse> freeHours = roomService.findFreeRoomSchedule(ROOM_ID, SELECTED_DATE);
+        FreeRoomScheduleResponse freeRoomSchedule = roomService.findFreeRoomSchedule(ROOM_ID, SELECTED_DATE);
 
-        assertFalse(freeHours.stream().anyMatch(hour -> hour.getHour().equals(HOUR_10_AM)));
-        assertFalse(freeHours.stream().anyMatch(hour -> hour.getHour().equals(HOUR_11_AM)));
+        // Verifica que en la lista de horarios de inicio se incluya la hora de las 6:00
+        assertFalse(freeRoomSchedule.getFreeStartTimes()
+                .stream()
+                .anyMatch(ts -> ts.getHour().equals(HOUR_10_AM)));
+
+        // Verifica que en la lista de horarios de fin se incluya la hora de las 21:00
+        assertFalse(freeRoomSchedule.getFreeEndTimes()
+                .stream()
+                .anyMatch(ts -> ts.getHour().equals(HOUR_11_AM)));
         verify(roomDAO, times(1)).findById(ROOM_ID);
     }
 
@@ -144,10 +148,18 @@ class RoomServiceImplTest {
 
         when(roomDAO.findById(ROOM_ID)).thenReturn(room);
 
-        List<FreeScheduleResponse> freeHours = roomService.findFreeRoomSchedule(ROOM_ID, SELECTED_DATE);
+        FreeRoomScheduleResponse freeRoomSchedule = roomService.findFreeRoomSchedule(ROOM_ID, SELECTED_DATE);
 
-        assertTrue(freeHours.stream().anyMatch(hour -> hour.getHour().equals(SIX_AM)));
-        assertTrue(freeHours.stream().anyMatch(hour -> hour.getHour().equals(NINE_PM)));
+        // Verifica que en la lista de horarios de inicio se incluya la hora de las 6:00
+        assertTrue(freeRoomSchedule.getFreeStartTimes()
+                .stream()
+                .anyMatch(ts -> ts.getHour().equals(SIX_AM)));
+
+        // Verifica que en la lista de horarios de fin se incluya la hora de las 21:00
+        assertTrue(freeRoomSchedule.getFreeEndTimes()
+                .stream()
+                .anyMatch(ts -> ts.getHour().equals(NINE_PM)));
+
         verify(roomDAO, times(1)).findById(ROOM_ID);
     }
 
@@ -166,12 +178,28 @@ class RoomServiceImplTest {
 
         when(roomDAO.findById(ROOM_ID)).thenReturn(room);
 
-        List<FreeScheduleResponse> freeHours = roomService.findFreeRoomSchedule(ROOM_ID, SELECTED_DATE);
+        FreeRoomScheduleResponse freeRoomSchedule = roomService.findFreeRoomSchedule(ROOM_ID, SELECTED_DATE);
 
-        assertFalse(freeHours.stream().anyMatch(hour -> hour.getHour().equals(HOUR_10_AM))); // Reserved
-        assertFalse(freeHours.stream().anyMatch(hour -> hour.getHour().equals(HOUR_11_AM))); // Reserved
-        assertFalse(freeHours.stream().anyMatch(hour -> hour.getHour().equals(LocalTime.of(14, 0)))); // Second reservation
-        assertFalse(freeHours.stream().anyMatch(hour -> hour.getHour().equals(LocalTime.of(15, 0)))); // Second reservation
+
+        assertFalse(freeRoomSchedule.getFreeStartTimes()
+                .stream()
+                .anyMatch(ts -> ts.getHour().equals(HOUR_10_AM)));// Reserved
+
+
+        assertFalse(freeRoomSchedule.getFreeEndTimes()
+                .stream()
+                .anyMatch(ts -> ts.getHour().equals(HOUR_11_AM)));// Reserved
+
+
+        assertFalse(freeRoomSchedule.getFreeStartTimes()
+                .stream()
+                .anyMatch(ts -> ts.getHour().equals(LocalTime.of(14, 0))));// Second reservation
+
+
+        assertFalse(freeRoomSchedule.getFreeEndTimes()
+                .stream()
+                .anyMatch(ts -> ts.getHour().equals(LocalTime.of(15, 0))));// Second reservation
+
         verify(roomDAO, times(1)).findById(ROOM_ID);
     }
 

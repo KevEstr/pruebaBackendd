@@ -17,4 +17,6 @@ public interface ReservationDAO{
     boolean existsById(Long reservationId);
     void deleteById(Long reservationId);
     Reservation findById(Long roomId);
+    List<Reservation> findByUserId(String userId);
+
 }

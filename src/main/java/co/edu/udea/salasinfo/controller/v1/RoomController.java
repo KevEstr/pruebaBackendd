@@ -3,10 +3,7 @@ package co.edu.udea.salasinfo.controller.v1;
 import co.edu.udea.salasinfo.dto.request.RoomRequest;
 import co.edu.udea.salasinfo.dto.request.filter.RoomFilter;
 import co.edu.udea.salasinfo.configuration.advisor.responses.ExceptionResponse;
-import co.edu.udea.salasinfo.dto.response.room.FreeScheduleResponse;
-import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
-import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
-import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
+import co.edu.udea.salasinfo.dto.response.room.*;
 import co.edu.udea.salasinfo.service.RoomService;
 import co.edu.udea.salasinfo.utils.RestConstants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -126,11 +123,11 @@ public class RoomController {
     }
 
     @GetMapping("/{id}/freeSchedule")
-    public ResponseEntity<List<FreeScheduleResponse>> findFreeRoomSchedule(
+    public ResponseEntity<FreeRoomScheduleResponse> findFreeRoomSchedule(
             @PathVariable Long id,
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedDate) {
         System.out.println("Fecha seleccionada: "+selectedDate);
-        List<FreeScheduleResponse> freeSchedule = roomService.findFreeRoomSchedule(id, selectedDate);
+        FreeRoomScheduleResponse freeSchedule = roomService.findFreeRoomSchedule(id, selectedDate);
 
         return ResponseEntity.ok(freeSchedule);
     }

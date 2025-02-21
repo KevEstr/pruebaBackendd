@@ -2,10 +2,7 @@ package co.edu.udea.salasinfo.service.impl;
 
 import co.edu.udea.salasinfo.dto.request.RoomRequest;
 import co.edu.udea.salasinfo.dto.request.filter.RoomFilter;
-import co.edu.udea.salasinfo.dto.response.room.FreeScheduleResponse;
-import co.edu.udea.salasinfo.dto.response.room.RoomResponse;
-import co.edu.udea.salasinfo.dto.response.room.RoomScheduleResponse;
-import co.edu.udea.salasinfo.dto.response.room.SpecificRoomResponse;
+import co.edu.udea.salasinfo.dto.response.room.*;
 import co.edu.udea.salasinfo.mapper.request.RoomRequestMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomResponseMapper;
 import co.edu.udea.salasinfo.mapper.response.RoomScheduleResponseMapper;
@@ -331,32 +328,46 @@ public class RoomServiceImpl implements RoomService {
 
 
     @Override
-    public List<FreeScheduleResponse> findFreeRoomSchedule(Long id, LocalDate selectedDate) {
+    public FreeRoomScheduleResponse findFreeRoomSchedule(Long id, LocalDate selectedDate) {
         Room foundRoom = roomDAO.findById(id);
 
         // Obtener las reservas aceptadas para la fecha
         List<Reservation> reservations = foundRoom.getReservations().stream()
-                .filter(reservation -> reservation.getReservationState().getState().equals(RStatus.ACCEPTED))
+                .filter(reservation -> reservation.getReservationState().getState().equals(RStatus.ACCEPTED) | reservation.getReservationState().getState().equals(RStatus.PENDING))
                 .filter(reservation -> isSameDay(reservation.getStartsAt(), selectedDate))
                 .toList();
 
         // Generar horario base
         List<LocalTime> availableHours = generateDailySchedule();
 
+        // Copias para calcular horarios de inicio y de fin
+        List<LocalTime> freeStartTimes = new ArrayList<>(availableHours);
+        List<LocalTime> freeEndTimes = new ArrayList<>(availableHours);
+
         // Excluir horas reservadas
         for (Reservation reservation : reservations) {
             LocalTime reservationStart = reservation.getStartsAt().toLocalTime();
             LocalTime reservationEnd = reservation.getEndsAt().toLocalTime();
-
+            System.out.println("Inicio: " + reservationStart + "Fin" + reservationEnd);
             // Remover todas las horas que caen dentro de la reserva
             availableHours.removeIf(hour ->
                     !hour.isBefore(reservationStart) && hour.isBefore(reservationEnd));
+
+            // Horarios de inicio: eliminar las horas que se encuentren en el intervalo [resStart, resEnd)
+            freeStartTimes.removeIf(hour -> !hour.isBefore(reservationStart) && hour.isBefore(reservationEnd));
+
+            // Horarios de fin: eliminar las horas que estén estrictamente dentro del intervalo (resStart, resEnd)
+            freeEndTimes.removeIf(hour -> hour.isAfter(reservationStart) && hour.isBefore(reservationEnd));
         }
 
-        // Formatear las horas disponibles a "H:mm"
-        return availableHours.stream()
+        List<FreeScheduleResponse> startResponses = freeStartTimes.stream()
                 .map(FreeScheduleResponse::new)
                 .toList();
+        List<FreeScheduleResponse> endResponses = freeEndTimes.stream()
+                .map(FreeScheduleResponse::new)
+                .toList();
+
+        return new FreeRoomScheduleResponse(startResponses, endResponses);
     }
 
     // Método auxiliar para verificar si la reserva es en la misma fecha seleccionada
