@@ -1,6 +1,5 @@
 package co.edu.udea.salasinfo.dto.response.room;
 
-import co.edu.udea.salasinfo.model.*;
 import lombok.*;
 
 import java.util.List;

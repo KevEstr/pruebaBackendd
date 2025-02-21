@@ -1,5 +1,6 @@
 package co.edu.udea.salasinfo.utils;
 
+@Generated
 public class RestConstants {
     private RestConstants() {
         // Not used

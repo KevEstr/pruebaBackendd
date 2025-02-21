@@ -126,7 +126,7 @@ public class RoomController {
     public ResponseEntity<FreeRoomScheduleResponse> findFreeRoomSchedule(
             @PathVariable Long id,
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedDate) {
-        System.out.println("Fecha seleccionada: "+selectedDate);
+        log.debug("Selected date: {}", selectedDate);
         FreeRoomScheduleResponse freeSchedule = roomService.findFreeRoomSchedule(id, selectedDate);
 
         return ResponseEntity.ok(freeSchedule);

@@ -1,7 +1,6 @@
 package co.edu.udea.salasinfo.dto.response.room;
 
 import co.edu.udea.salasinfo.dto.response.ImplementResponse;
-import co.edu.udea.salasinfo.utils.enums.ImplementCondition;
 import lombok.*;
 
 @Data

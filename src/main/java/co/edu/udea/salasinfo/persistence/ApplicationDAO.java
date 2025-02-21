@@ -2,7 +2,6 @@ package co.edu.udea.salasinfo.persistence;
 
 import co.edu.udea.salasinfo.model.Application;
 import co.edu.udea.salasinfo.model.Room;
-import co.edu.udea.salasinfo.model.RoomApplication;
 
 import java.util.List;
 

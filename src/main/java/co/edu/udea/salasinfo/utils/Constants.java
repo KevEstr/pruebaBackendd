@@ -1,5 +1,6 @@
 package co.edu.udea.salasinfo.utils;
 
+@Generated
 public class Constants {
     private Constants() {
         throw new IllegalStateException("Utility class");

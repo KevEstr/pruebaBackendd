@@ -348,7 +348,7 @@ public class RoomServiceImpl implements RoomService {
         for (Reservation reservation : reservations) {
             LocalTime reservationStart = reservation.getStartsAt().toLocalTime();
             LocalTime reservationEnd = reservation.getEndsAt().toLocalTime();
-            System.out.println("Inicio: " + reservationStart + "Fin" + reservationEnd);
+            log.debug("Start: {} End: {}", reservationStart, reservationEnd);
             // Remover todas las horas que caen dentro de la reserva
             availableHours.removeIf(hour ->
                     !hour.isBefore(reservationStart) && hour.isBefore(reservationEnd));

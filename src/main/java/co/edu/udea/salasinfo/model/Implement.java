@@ -1,6 +1,5 @@
 package co.edu.udea.salasinfo.model;
 
-import co.edu.udea.salasinfo.utils.enums.ImplementCondition;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
