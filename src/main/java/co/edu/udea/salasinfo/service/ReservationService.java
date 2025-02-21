@@ -3,6 +3,7 @@ package co.edu.udea.salasinfo.service;
 import co.edu.udea.salasinfo.dto.request.ClassReservationRequest;
 import co.edu.udea.salasinfo.dto.request.ReservationRequest;
 import co.edu.udea.salasinfo.dto.response.reservation.ReservationResponse;
+import co.edu.udea.salasinfo.model.ReservationState;
 import co.edu.udea.salasinfo.utils.enums.RStatus;
 
 import java.util.*;
@@ -24,7 +25,7 @@ public interface ReservationService {
     ReservationResponse updateState(Long id, RStatus state);
     List<ReservationResponse> findStated(RStatus state);
     List<ReservationResponse> findByRoomId(Long roomId);
-
+    List<ReservationResponse> findByUserId(String userId);
 }
 
 

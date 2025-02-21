@@ -1,6 +1,7 @@
 package co.edu.udea.salasinfo.service.impl;
 
 import co.edu.udea.salasinfo.dto.request.ClassReservationRequest;
+import co.edu.udea.salasinfo.dto.request.NotificationRequest;
 import co.edu.udea.salasinfo.dto.request.ReservationRequest;
 import co.edu.udea.salasinfo.dto.response.reservation.ReservationResponse;
 import co.edu.udea.salasinfo.exceptions.RoomOccupiedAtException;
@@ -8,10 +9,15 @@ import co.edu.udea.salasinfo.mapper.request.ReservationRequestMapper;
 import co.edu.udea.salasinfo.mapper.response.ReservationResponseMapper;
 import co.edu.udea.salasinfo.model.Reservation;
 import co.edu.udea.salasinfo.model.ReservationState;
+import co.edu.udea.salasinfo.model.Room;
 import co.edu.udea.salasinfo.persistence.ReservationDAO;
 import co.edu.udea.salasinfo.persistence.ReservationStateDAO;
+import co.edu.udea.salasinfo.persistence.RoomDAO;
+import co.edu.udea.salasinfo.service.NotificationService;
 import co.edu.udea.salasinfo.service.ReservationService;
+import co.edu.udea.salasinfo.utils.Constants;
 import co.edu.udea.salasinfo.utils.StreamUtils;
+import co.edu.udea.salasinfo.utils.enums.NotificationType;
 import co.edu.udea.salasinfo.utils.enums.RStatus;
 import co.edu.udea.salasinfo.utils.enums.ReservationType;
 import co.edu.udea.salasinfo.utils.enums.WeekDay;
@@ -30,8 +36,11 @@ import java.util.List;
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationDAO reservationDAO;
     private final ReservationStateDAO reservationStateDAO;
+    private final RoomDAO roomDAO;
     private final ReservationResponseMapper reservationResponseMapper;
     private final ReservationRequestMapper reservationRequestMapper;
+    private final NotificationService notificationService;
+
 
     public List<ReservationResponse> findAll() {
         return reservationResponseMapper.toResponses(reservationDAO.findAll());
@@ -56,7 +65,16 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponse saveSingleTimeReservation(ReservationRequest reservation) {
         Reservation entity = reservationRequestMapper.toEntity(reservation);
+        Room room = roomDAO.findById(reservation.getRoomId());
         entity.setType(ReservationType.ONCE);
+        notificationService.save(
+                NotificationRequest
+                        .builder()
+                        .type(NotificationType.ADMIN)
+                        .message(String.format(Constants.NEW_RESERVATION_NOTIFICATION, room.getBuilding(), room.getRoomNum()))
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
         return save(entity);
     }
 
@@ -108,9 +126,22 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponse updateState(Long id, RStatus state) {
         Reservation reservation = reservationDAO.findById(id);
+        Room room = reservation.getRoom();
+        String messageFormat = state.equals(RStatus.REJECTED)
+                ? Constants.REJECTED_RESERVATION_NOTIFICATION
+                : Constants.ACCEPTED_RESERVATION_NOTIFICATION;
 
         reservation.setReservationState(reservationStateDAO.findByState(state));
         Reservation result = reservationDAO.save(reservation);
+        notificationService.save(
+                NotificationRequest
+                        .builder()
+                        .receiverId(reservation.getUser().getId())
+                        .type(NotificationType.PRIVATE)
+                        .message(String.format(messageFormat, room.getBuilding(), room.getRoomNum()))
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
         return reservationResponseMapper.toResponse(result);
     }
 
@@ -173,9 +204,21 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationResponse> findByRoomId(Long roomId) {
-        List<Reservation> reservations = reservationDAO.findReservationsByRoomIdRoomId(roomId);
+        List<Reservation> reservations = reservationDAO.findReservationsByRoomIdRoomId(roomId)
+                .stream()
+                .filter(reservation -> !reservation.getReservationState().getState().equals(RStatus.CANCELLED) && !reservation.getReservationState().getState().equals(RStatus.REJECTED))
+                .toList();
         return reservationResponseMapper.toResponses(reservations);
     }
+
+    @Override
+    public List<ReservationResponse> findByUserId(String userId) {
+        // Se utiliza el método definido en el DAO para filtrar las reservas por el customerId del usuario
+        List<Reservation> reservations = reservationDAO.findByUserId(userId);
+        // Mapea las entidades a DTOs
+        return reservationResponseMapper.toResponses(reservations);
+    }
+
 
 }
 

@@ -5,6 +5,8 @@ public class Constants {
         throw new IllegalStateException("Utility class");
     }
 
+    public static final String TOKEN_PREFIX = "Bearer ";
+    public static final Integer TOKEN_PREFIX_LENGTH = TOKEN_PREFIX.length();
     public static final String INVALID_TOKEN_MESSAGE = "The given token is invalid";
     public static final String INVALID_TOKEN_TYPE_MESSAGE = "The given token has a wrong typ2";
     public static final String ROOM_OCCUPIED_AT_MESSAGE = "Room '%s' is occupied at %s";
@@ -61,6 +63,8 @@ public class Constants {
 
 
     // Positive
-    public static final String  COMPUTER_AMOUNT_POSITIVE_MESSAGE = "'computerAmount' must be positive'";
-
+    public static final String COMPUTER_AMOUNT_POSITIVE_MESSAGE = "'computerAmount' must be positive'";
+    public static final String REJECTED_RESERVATION_NOTIFICATION = "Su petición de reserva en el salón %s-%s ha sido rechazada.";
+    public static final String ACCEPTED_RESERVATION_NOTIFICATION = "Su reserva para el salón %s-%s ha sido aceptada.";
+    public static final String NEW_RESERVATION_NOTIFICATION = "Hay una nueva petición de reserva para el salón %s-%s.";
 }

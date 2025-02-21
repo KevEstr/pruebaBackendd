@@ -61,4 +61,8 @@ public class ReservationJPA implements ReservationDAO {
     public Reservation findById(Long roomId) {
         return reservationRepository.findById(roomId).orElseThrow(() -> new ReservationNotFoundException(roomId));
     }
+    @Override
+    public List<Reservation> findByUserId(String userId){
+        return reservationRepository.findByUserId(userId);
+    }
 }
