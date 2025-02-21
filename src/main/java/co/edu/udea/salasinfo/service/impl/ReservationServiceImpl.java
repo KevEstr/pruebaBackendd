@@ -12,6 +12,7 @@ import co.edu.udea.salasinfo.model.ReservationState;
 import co.edu.udea.salasinfo.model.Room;
 import co.edu.udea.salasinfo.persistence.ReservationDAO;
 import co.edu.udea.salasinfo.persistence.ReservationStateDAO;
+import co.edu.udea.salasinfo.persistence.RoomDAO;
 import co.edu.udea.salasinfo.service.NotificationService;
 import co.edu.udea.salasinfo.service.ReservationService;
 import co.edu.udea.salasinfo.utils.Constants;
@@ -35,6 +36,7 @@ import java.util.List;
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationDAO reservationDAO;
     private final ReservationStateDAO reservationStateDAO;
+    private final RoomDAO roomDAO;
     private final ReservationResponseMapper reservationResponseMapper;
     private final ReservationRequestMapper reservationRequestMapper;
     private final NotificationService notificationService;
@@ -63,14 +65,14 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponse saveSingleTimeReservation(ReservationRequest reservation) {
         Reservation entity = reservationRequestMapper.toEntity(reservation);
-        Room room = entity.getRoom();
+        Room room = roomDAO.findById(entity.getRoom().getId());
         entity.setType(ReservationType.ONCE);
         notificationService.save(
                 NotificationRequest
                         .builder()
-                        .receiverId(entity.getUser().getId())
-                        .type(NotificationType.Private)
+                        .type(NotificationType.ADMIN)
                         .message(String.format(Constants.NEW_RESERVATION_NOTIFICATION, room.getBuilding(), room.getRoomNum()))
+                        .timestamp(LocalDateTime.now())
                         .build()
         );
         return save(entity);
@@ -135,8 +137,9 @@ public class ReservationServiceImpl implements ReservationService {
                 NotificationRequest
                         .builder()
                         .receiverId(reservation.getUser().getId())
-                        .type(NotificationType.Private)
+                        .type(NotificationType.PRIVATE)
                         .message(String.format(messageFormat, room.getBuilding(), room.getRoomNum()))
+                        .timestamp(LocalDateTime.now())
                         .build()
         );
         return reservationResponseMapper.toResponse(result);

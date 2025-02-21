@@ -11,9 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,7 +28,12 @@ public class NotificationController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = NotificationResponse.class)))),
     })
     @GetMapping
-    public ResponseEntity<List<NotificationResponse>> findAll(){
+    public ResponseEntity<List<NotificationResponse>> findAll() {
         return ResponseEntity.ok(notificationService.findAll());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<NotificationResponse> deleteById(@PathVariable("id") Long notificationId) {
+        return ResponseEntity.ok(notificationService.deleteById(notificationId));
     }
 }

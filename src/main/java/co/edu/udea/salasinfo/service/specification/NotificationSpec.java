@@ -7,7 +7,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class NotificationSpec {
     private static final String NOTIFICATION_TYPE = "type";
-    private static final String USER_ID = "customerId";
+    private static final String USER_ID = "id";
+    private static final String USER = "user";
 
     private NotificationSpec() {
         throw new IllegalStateException("Utility class");
@@ -30,7 +31,7 @@ public class NotificationSpec {
         return (root, query, criteriaBuilder) ->
                 userId == null || userId.isEmpty()
                         ? criteriaBuilder.conjunction()
-                        : criteriaBuilder.equal(root.get(USER_ID), userId);
+                        : criteriaBuilder.equal(root.join(USER).get(USER_ID), userId);
     }
 
 

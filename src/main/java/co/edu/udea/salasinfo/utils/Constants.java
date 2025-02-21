@@ -65,6 +65,6 @@ public class Constants {
     // Positive
     public static final String COMPUTER_AMOUNT_POSITIVE_MESSAGE = "'computerAmount' must be positive'";
     public static final String REJECTED_RESERVATION_NOTIFICATION = "Su petición de reserva en el salón %s-%s ha sido rechazada.";
-    public static final String ACCEPTED_RESERVATION_NOTIFICATION = "Su reserva para el salón $s-%s ha sido aceptada.";
+    public static final String ACCEPTED_RESERVATION_NOTIFICATION = "Su reserva para el salón %s-%s ha sido aceptada.";
     public static final String NEW_RESERVATION_NOTIFICATION = "Hay una nueva petición de reserva para el salón %s-%s.";
 }

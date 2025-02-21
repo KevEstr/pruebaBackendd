@@ -38,17 +38,15 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationResponse> findAll() {
         // Search user from Token. To don't have to use an id from Frontend and have more security
-        User user = userDAO.findById(
-                jwtService.extractUsername(TokenHolder.getToken())
-        );
+        User user = getUserFromToken();
 
         // Creates and personalize the inner filter
         NotificationInnerFilter notificationInnerFilter = new NotificationInnerFilter();
         if (user.getRole().getRoleName().equals(RoleName.Admin)) {
-            notificationInnerFilter.setType(NotificationType.Admin);
+            notificationInnerFilter.setType(NotificationType.ADMIN);
         } else {
             notificationInnerFilter.setUserId(user.getId());
-            notificationInnerFilter.setType(NotificationType.Private);
+            notificationInnerFilter.setType(NotificationType.PRIVATE);
         }
 
         // Search whether Admin notifications or private notifications
@@ -58,7 +56,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationResponse save(NotificationRequest notificationRequest) {
         Notification notification = requestMapper.toEntity(notificationRequest);
-        notification.setUser(user);
+        if(notification.getType().equals(NotificationType.PRIVATE)){
+            User user = userDAO.findById(notificationRequest.getReceiverId());
+            notification.setUser(user);
+        }
         return responseMapper.toResponse(
                 notificationDAO.save(notification)
         );
@@ -68,6 +69,12 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationResponse deleteById(Long id) {
         return responseMapper.toResponse(
                 notificationDAO.deleteById(id)
+        );
+    }
+
+    private User getUserFromToken(){
+        return userDAO.findById(
+                jwtService.extractUsername(TokenHolder.getToken())
         );
     }
 }
