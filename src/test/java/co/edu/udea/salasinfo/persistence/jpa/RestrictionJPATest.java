@@ -2,7 +2,6 @@ package co.edu.udea.salasinfo.persistence.jpa;
 
 import co.edu.udea.salasinfo.exceptions.EntityNotFoundException;
 import co.edu.udea.salasinfo.model.Restriction;
-import co.edu.udea.salasinfo.persistence.RestrictionDAO;
 import co.edu.udea.salasinfo.repository.RestrictionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,9 +27,6 @@ class RestrictionJPATest {
     private RestrictionRepository restrictionRepository;
 
     private Restriction restriction;
-
-    @Mock
-    private RestrictionDAO restrictionDAO;
 
     @BeforeEach
     public void setUp() {
@@ -159,6 +155,30 @@ class RestrictionJPATest {
         // Assert
         assertFalse(result);
         verify(restrictionRepository, times(1)).existsByDescription(description);
+    }
+
+    @Test
+    void findAllById_ShouldReturnListOfRestrictions() {
+        // Arrange
+        List<Long> ids = List.of(1L, 2L);
+        Restriction restriction2 = Restriction.builder()
+                .id(2L)
+                .description("No pets allowed")
+                .roomRestrictions(Collections.emptyList())
+                .build();
+
+        List<Restriction> expectedRestrictions = List.of(restriction, restriction2);
+        when(restrictionRepository.findAllById(ids)).thenReturn(expectedRestrictions);
+
+        // Act
+        List<Restriction> result = restrictionJPA.findAllById(ids);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(restriction.getId(), result.get(0).getId());
+        assertEquals(restriction2.getId(), result.get(1).getId());
+        verify(restrictionRepository, times(1)).findAllById(ids);
     }
 
 }
