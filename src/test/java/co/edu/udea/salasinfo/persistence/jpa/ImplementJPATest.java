@@ -6,7 +6,6 @@ import co.edu.udea.salasinfo.model.Room;
 import co.edu.udea.salasinfo.model.RoomImplement;
 import co.edu.udea.salasinfo.persistence.ImplementDAO;
 import co.edu.udea.salasinfo.repository.ImplementRepository;
-import co.edu.udea.salasinfo.utils.enums.ImplementCondition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,9 +30,6 @@ class ImplementJPATest {
     private ImplementRepository implementRepository;
 
     private Implement implement;
-
-    @Mock
-    private ImplementDAO implementDAO;
 
     @BeforeEach
     public void setUp() {
@@ -133,6 +129,53 @@ class ImplementJPATest {
         // Assert
         assertFalse(result);  // Verify that the result is false
         verify(implementRepository, times(1)).existsByName(name);
+    }
+
+    @Test
+    void deleteById_ShouldDeleteImplement() {
+        // Arrange
+        Long id = 1L;
+        doNothing().when(implementRepository).deleteById(id); // Mock void method
+
+        // Act
+        implementJPA.deleteById(id);
+
+        // Assert
+        verify(implementRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void save_ShouldReturnSavedImplement() {
+        // Arrange
+        when(implementRepository.save(implement)).thenReturn(implement);
+
+        // Act
+        Implement savedImplement = implementJPA.save(implement);
+
+        // Assert
+        assertNotNull(savedImplement);
+        assertEquals(implement.getId(), savedImplement.getId());
+        verify(implementRepository, times(1)).save(implement);
+    }
+
+    @Test
+    void findAllById_ShouldReturnListOfImplements() {
+        // Arrange
+        List<Long> ids = List.of(1L, 2L);
+        Implement implement2 = Implement.builder().id(2L).name("Whiteboard").roomImplements(Collections.emptyList()).build();
+        List<Implement> expectedImplements = List.of(implement, implement2);
+
+        when(implementRepository.findAllById(ids)).thenReturn(expectedImplements);
+
+        // Act
+        List<Implement> result = implementJPA.findAllById(ids);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(implement.getId(), result.get(0).getId());
+        assertEquals(implement2.getId(), result.get(1).getId());
+        verify(implementRepository, times(1)).findAllById(ids);
     }
 
 
