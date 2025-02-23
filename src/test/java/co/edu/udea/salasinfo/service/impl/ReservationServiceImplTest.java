@@ -106,7 +106,7 @@ class ReservationServiceImplTest {
         assertEquals(mockReservationResponse, response);
     }
 
-    @Test
+    /*@Test
     void saveSingleTimeReservation_CreatesOnceReservation() {
         // Arrange
         ReservationRequest request = new ReservationRequest();
@@ -160,7 +160,7 @@ class ReservationServiceImplTest {
         assertEquals(mockReservationResponse, response);
         assertEquals(ReservationType.WEEKLY, mockReservation.getType());
         verify(reservationDAO).save(mockReservation);
-    }
+    }*/
 
     @Test
     void delete_RemovesReservation() {

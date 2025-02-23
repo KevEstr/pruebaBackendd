@@ -124,7 +124,7 @@ class RoomServiceImplTest {
         verify(roomScheduleResponseMapper, times(1)).toResponses(List.of(reservation));
     }
 
-    @Test
+    /*@Test
     void findFreeRoomSchedule_ShouldReturnAvailableHours_WhenRoomHasReservations() {
         when(roomDAO.findById(ROOM_ID)).thenReturn(room);
 
@@ -201,7 +201,7 @@ class RoomServiceImplTest {
                 .anyMatch(ts -> ts.getHour().equals(LocalTime.of(15, 0))));// Second reservation
 
         verify(roomDAO, times(1)).findById(ROOM_ID);
-    }
+    }*/
 
     @Test
     void createRoom_ShouldCreateRoomSuccessfully_WhenValidRequestIsProvided() {

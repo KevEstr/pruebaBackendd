@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
@@ -122,13 +123,22 @@ public class RoomController {
         return ResponseEntity.ok(roomService.findRoomSchedule(id));
     }
 
-    @GetMapping("/{id}/freeSchedule")
-    public ResponseEntity<FreeRoomScheduleResponse> findFreeRoomSchedule(
+    @GetMapping("/{id}/freeStartSchedule")
+    @PreAuthorize("hasAnyRole('Admin')")
+    public ResponseEntity<List<FreeScheduleResponse>> findFreeStartSchedule(
             @PathVariable Long id,
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedDate) {
-        System.out.println("Fecha seleccionada: "+selectedDate);
-        FreeRoomScheduleResponse freeSchedule = roomService.findFreeRoomSchedule(id, selectedDate);
+        List<FreeScheduleResponse> freeSchedule = roomService.findAvailableStartTimes(id, selectedDate);
+        return ResponseEntity.ok(freeSchedule);
+    }
 
+    @GetMapping("/{id}/freeEndSchedule")
+    @PreAuthorize("hasAnyRole('Admin')")
+    public ResponseEntity<List<FreeScheduleResponse>> findFreeEndSchedule(
+            @PathVariable Long id,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedDate,
+            @RequestParam("startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime selectedStartTime) {
+        List<FreeScheduleResponse> freeSchedule = roomService.findAvailableEndTimes(id, selectedDate, selectedStartTime);
         return ResponseEntity.ok(freeSchedule);
     }
 

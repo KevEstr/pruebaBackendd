@@ -44,7 +44,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private ReservationResponse save(Reservation reservation) {
-        if (reservationDAO.existsByStartsAtAndRoomId(reservation.getStartsAt(), reservation.getRoom()))
+        if (reservationDAO.existsByStartsAtAndRoomAndReservationState_StateNot(reservation.getStartsAt(), reservation.getRoom(), RStatus.CANCELLED))
             throw new RoomOccupiedAtException(reservation.getRoom().getId().toString(), reservation.getStartsAt());
 
         reservation.setReservationState(reservationStateDAO.findByState(RStatus.PENDING));
@@ -72,7 +72,7 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationResponse> saveClass(ClassReservationRequest classReservation) {
         List<Reservation> reservations = generateClassReservations(classReservation);
         reservations.forEach(reservation -> {
-            if (reservationDAO.existsByStartsAtAndRoomId(reservation.getStartsAt(), reservation.getRoom()))
+            if (reservationDAO.existsByStartsAtAndRoomAndReservationState_StateNot(reservation.getStartsAt(), reservation.getRoom(), RStatus.CANCELLED))
                 throw new RoomOccupiedAtException(reservation.getRoom().getId().toString(), reservation.getStartsAt());
             reservation.setType(ReservationType.WEEKLY);
         });
