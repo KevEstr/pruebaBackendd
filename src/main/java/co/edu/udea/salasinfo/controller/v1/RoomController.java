@@ -105,9 +105,8 @@ public class RoomController {
                             array = @ArraySchema(schema = @Schema(implementation = RoomResponse.class))))
     })
     @GetMapping("/free")
-    public ResponseEntity<List<RoomResponse>> findFree(@Nullable LocalDateTime date) {
-        if (date == null) date = LocalDateTime.now();
-        return ResponseEntity.ok(roomService.findFreeAt(date));
+    public ResponseEntity<List<RoomResponse>> findFree(@Nullable LocalDateTime startTime, @Nullable LocalDateTime endTime) {
+        return ResponseEntity.ok(roomService.findFreeAt(startTime, endTime));
     }
 
     @Operation(summary = RestConstants.SWAGGER_FIND_SCHEDULE_SUMMARY)

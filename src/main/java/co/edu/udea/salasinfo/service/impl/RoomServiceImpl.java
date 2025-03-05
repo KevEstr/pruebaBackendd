@@ -308,13 +308,15 @@ public class RoomServiceImpl implements RoomService {
      * @return A list of free rooms at the given time.
      */
     @Override
-    public List<RoomResponse> findFreeAt(LocalDateTime date) {
+    public List<RoomResponse> findFreeAt(LocalDateTime start, LocalDateTime end) {
+        System.out.println("START TIME: "+ start);
+        System.out.println("END TIME: "+ end);
         List<Reservation> reservations = reservationDAO.findAll();
         List<Room> occupiedReservations = reservations.stream()
                 .filter(reservation -> reservation.getReservationState().getState() == RStatus.ACCEPTED) // Accepted reservations
                 .filter(reservation -> { // Reservations at that specific time
-                    if (reservation.getStartsAt().isEqual(date)) return true;
-                    return date.isAfter(reservation.getStartsAt()) && date.isBefore(reservation.getEndsAt());
+                    if (reservation.getStartsAt().isEqual(start) && reservation.getStartsAt().isEqual(end)) return true;
+                    return reservation.getStartsAt().isBefore(end) && reservation.getEndsAt().isAfter(start);
                 })
                 .map(Reservation::getRoom) // Occupied room
                 .toList();
