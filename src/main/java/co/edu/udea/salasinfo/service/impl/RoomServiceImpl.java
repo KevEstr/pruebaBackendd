@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static co.edu.udea.salasinfo.utils.Functions.generateDailySchedule;
 import static co.edu.udea.salasinfo.utils.Functions.isSameDay;
@@ -141,13 +142,15 @@ public class RoomServiceImpl implements RoomService {
         if (roomRequest.getRestrictionIds() != null) {
             List<Restriction> restrictionsList = restrictionDAO.findAllById(roomRequest.getRestrictionIds());
             Room finalRoom = room;
-            room.setRestrictions(restrictionsList.stream()
-                    .map(restriction -> {
-                        RoomRestriction roomRestriction = new RoomRestriction();
-                        roomRestriction.setRoom(finalRoom);
-                        roomRestriction.setRestriction(restriction);
-                        return roomRestriction;
-                    }).toList()
+            room.setRestrictions(
+                    restrictionsList.stream()
+                            .map(restriction -> {
+                                RoomRestriction roomRestriction = new RoomRestriction();
+                                roomRestriction.setRoom(finalRoom);
+                                roomRestriction.setRestriction(restriction);
+                                return roomRestriction;
+                            })
+                            .collect(Collectors.toCollection(ArrayList::new))  // <-- Crea una ArrayList mutable
             );
         }
 
@@ -189,7 +192,11 @@ public class RoomServiceImpl implements RoomService {
 
         // Eliminar implementos antiguos
         if (foundRoom.getImplementsList() != null) {
-            roomImplementDAO.deleteAll(foundRoom.getImplementsList());
+            foundRoom.getImplementsList().clear();
+        }
+        else {
+            // Si la colección es nula, la inicializamos:
+            foundRoom.setImplementsList(new ArrayList<>());
         }
 
         // Actualizar implementos con estado
@@ -209,12 +216,16 @@ public class RoomServiceImpl implements RoomService {
                 roomImplementDAO.save(roomImplement);
                 roomImplementList.add(roomImplement);
             }
-            foundRoom.setImplementsList(roomImplementList);
+            foundRoom.getImplementsList().addAll(roomImplementList);
+
         }
 
         // Eliminar software antiguo
         if (foundRoom.getRoomApplications() != null) {
-            roomApplicationDAO.deleteAll(foundRoom.getRoomApplications());
+            foundRoom.getRoomApplications().clear();
+        }
+        else {
+            foundRoom.setRoomApplications(new ArrayList<>());
         }
 
         // Actualizar software con versión
@@ -234,23 +245,27 @@ public class RoomServiceImpl implements RoomService {
                 roomApplicationDAO.save(roomApplication);
                 roomApplicationList.add(roomApplication);
             }
-            foundRoom.setRoomApplications(roomApplicationList);
+            foundRoom.getRoomApplications().addAll(roomApplicationList);
         }
 
         // Eliminar restricciones antiguas
-        roomRestrictionDAO.deleteAllByRoomId(foundRoom.getId());
-        foundRoom.getRestrictions().clear();
+        if (foundRoom.getRestrictions() != null) {
+            foundRoom.getRestrictions().clear();
+        } else {
+            foundRoom.setRestrictions(new ArrayList<>());
+        }
 
         // Actualizar restricciones
         if (roomRequest.getRestrictionIds() != null) {
             List<Restriction> restrictionsList = restrictionDAO.findAllById(roomRequest.getRestrictionIds());
-            foundRoom.setRestrictions(restrictionsList.stream()
+            List<RoomRestriction> newRestrictions = restrictionsList.stream()
                     .map(restriction -> {
                         RoomRestriction roomRestriction = new RoomRestriction();
                         roomRestriction.setRoom(foundRoom);
                         roomRestriction.setRestriction(restriction);
                         return roomRestriction;
-                    }).toList());
+                    }).collect(Collectors.toCollection(ArrayList::new));
+            foundRoom.getRestrictions().addAll(newRestrictions);// <-- Crea una ArrayList mutable;
         }
 
         // Guardar los cambios
