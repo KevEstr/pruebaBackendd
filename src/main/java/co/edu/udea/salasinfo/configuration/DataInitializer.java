@@ -35,12 +35,15 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initDatabase() {
         return args -> {
-            if(roleRepository.existsById(1L)) return;
-            // Inserting roles
             Role roleAdmin = new Role(null, RoleName.Admin);
             Role roleUser = new Role(null, RoleName.Usuario);
             Role roleProfessor = new Role(null, RoleName.Profesor);
             Role roleMonitor = new Role(null, RoleName.Monitor);
+            if(!userRepository.existsByEmail("admin@salasinfo.com")) userRepository.save(
+                    new User(null, "Admin", "Salasinfo", "admin@salasinfo.com", passwordEncoder.encode(PASS), roleAdmin) // NOSONAR not used in secure contexts
+            );
+            if(roleRepository.existsById(1L)) return;
+            // Inserting roles
             roleRepository.saveAll(Arrays.asList(roleAdmin, roleUser, roleProfessor, roleMonitor));
 
             // Inserting customers
