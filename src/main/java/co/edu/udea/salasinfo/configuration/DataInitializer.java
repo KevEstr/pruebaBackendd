@@ -35,22 +35,34 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initDatabase() {
         return args -> {
+            if (roleRepository.existsById(1L)) return;
+            // Inserting roles
             Role roleAdmin = new Role(null, RoleName.Admin);
             Role roleUser = new Role(null, RoleName.Usuario);
             Role roleProfessor = new Role(null, RoleName.Profesor);
             Role roleMonitor = new Role(null, RoleName.Monitor);
-            if(!userRepository.existsByEmail("admin@salasinfo.com")) userRepository.save(
-                    new User(null, "Admin", "Salasinfo", "admin@salasinfo.com", passwordEncoder.encode(PASS), roleAdmin) // NOSONAR not used in secure contexts
-            );
-            if(roleRepository.existsById(1L)) return;
-            // Inserting roles
             roleRepository.saveAll(Arrays.asList(roleAdmin, roleUser, roleProfessor, roleMonitor));
 
             // Inserting customers
             User user1 = new User(null, "Juan", "Doe", "juan.doe@example.com", passwordEncoder.encode(PASS), roleAdmin); //NOSONAR not used in secure contexts
             User user2 = new User(null, "Ana", "Smith", "ana.smith@example.com", passwordEncoder.encode(PASS), roleProfessor); //NOSONAR not used in secure contexts
             User user3 = new User(null, "Roberto", "Johnson", "roberto.johnson@example.com", passwordEncoder.encode(PASS), roleMonitor); //NOSONAR not used in secure contexts
-            userRepository.saveAll(Arrays.asList(user1, user2, user3));
+
+            User admin1 = User.builder()
+                    .email("admin@salasinfo.com")
+                    .firstname("admin")
+                    .lastname("salasinfo")
+                    .password(passwordEncoder.encode(PASS)) // NOSONAR
+                    .role(roleAdmin)
+                    .build();
+            User admin2 = User.builder()
+                    .email("admin2@salasinfo.com")
+                    .firstname("admin2")
+                    .lastname("salasinfo")
+                    .password(passwordEncoder.encode(PASS)) // NOSONAR
+                    .role(roleAdmin)
+                    .build();
+            userRepository.saveAll(Arrays.asList(user1, user2, user3, admin1, admin2));
 
             // Inserting rooms
             Room room1 = Room.builder()
@@ -81,6 +93,12 @@ public class DataInitializer {
                     .build();
             roomRepository.saveAll(Arrays.asList(room1, room2, room3));
 
+            // Inserting implements
+            Implement implement1 = new Implement(null, "Proyector", null);
+            Implement implement2 = new Implement(null, "Pizarra", null);
+            Implement implement3 = new Implement(null, "Sistema de Sonido", null);
+            implementRepository.saveAll(Arrays.asList(implement1, implement2, implement3));
+
             // Inserting applications
             Application app1 = new Application(null, "Microsoft Office", null);
             Application app2 = new Application(null, "Zoom", null);
@@ -106,17 +124,53 @@ public class DataInitializer {
             roomRestriction3.setRoom(room3);
             roomRestriction3.setRestriction(restriction3);
 
+            RoomImplement roomImplement1 = RoomImplement.builder()
+                    .room(room1)
+                    .implement(implement1)
+                    .state("Bueno")
+                    .build();
+            RoomImplement roomImplement2 = RoomImplement.builder()
+                    .room(room2)
+                    .implement(implement2)
+                    .state("Malo")
+                    .build();
+            RoomImplement roomImplement3 = RoomImplement.builder()
+                    .room(room3)
+                    .implement(implement3)
+                    .state("Bueno")
+                    .build();
+
+            RoomApplication roomApplication1 = RoomApplication.builder()
+                    .room(room1)
+                    .application(app1)
+                    .version("1.2.0")
+                    .build();
+            RoomApplication roomApplication2 = RoomApplication.builder()
+                    .room(room2)
+                    .application(app2)
+                    .version("1.0.0")
+                    .build();
+            RoomApplication roomApplication3 = RoomApplication.builder()
+                    .room(room3)
+                    .application(app3)
+                    .version("1.5.0")
+                    .build();
+
             // Assigning restrictions to rooms
             room1.setRestrictions(List.of(roomRestriction1));
             room2.setRestrictions(List.of(roomRestriction2));
             room3.setRestrictions(List.of(roomRestriction3));
-            roomRepository.saveAll(Arrays.asList(room1, room2, room3));
 
-            // Inserting implements
-            Implement implement1 = new Implement(null, "Proyector", null);
-            Implement implement2 = new Implement(null, "Pizarra", null);
-            Implement implement3 = new Implement(null, "Sistema de Sonido",null);
-            implementRepository.saveAll(Arrays.asList(implement1, implement2, implement3));
+            // Assigning restrictions to rooms
+            room1.setRoomApplications(List.of(roomApplication1));
+            room2.setRoomApplications(List.of(roomApplication2));
+            room3.setRoomApplications(List.of(roomApplication3));
+
+            // Assigning implements to rooms
+            room1.setImplementsList(List.of(roomImplement1));
+            room2.setImplementsList(List.of(roomImplement2));
+            room3.setImplementsList(List.of(roomImplement3));
+            roomRepository.saveAll(Arrays.asList(room1, room2, room3));
 
             // Inserting reservation states
             ReservationState state1 = new ReservationState(null, RStatus.ACCEPTED);
