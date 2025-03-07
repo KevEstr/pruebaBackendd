@@ -2,6 +2,7 @@ package co.edu.udea.salasinfo.repository;
 
 import co.edu.udea.salasinfo.model.Reservation;
 import co.edu.udea.salasinfo.model.Room;
+import co.edu.udea.salasinfo.utils.enums.RStatus;
 import co.edu.udea.salasinfo.utils.enums.ReservationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findReservationsByRoomId(Long roomId);
     boolean existsByStartsAtAndRoom(LocalDateTime startsAt, Room roomId);
     List<Reservation> findByUserId(String userId);
-
+    // Nuevo método que verifica que el estado de la reserva no sea CANCELLED
+    boolean existsByStartsAtAndRoomAndReservationState_StateNot(LocalDateTime startsAt, Room room, RStatus state);
 
 }

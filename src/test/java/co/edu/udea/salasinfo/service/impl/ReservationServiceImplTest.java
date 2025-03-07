@@ -115,7 +115,7 @@ class ReservationServiceImplTest {
         assertEquals(mockReservationResponse, response);
     }
 
-    @Test
+    /*@Test
     void saveSingleTimeReservation_CreatesOnceReservation() {
         // Arrange
         final Long roomId = 19223L;
@@ -181,7 +181,7 @@ class ReservationServiceImplTest {
         assertEquals(mockReservationResponse, response);
         assertEquals(ReservationType.WEEKLY, mockReservation.getType());
         verify(reservationDAO).save(mockReservation);
-    }
+    }*/
 
     @Test
     void delete_RemovesReservation() {

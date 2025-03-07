@@ -5,6 +5,7 @@ import co.edu.udea.salasinfo.model.Reservation;
 import co.edu.udea.salasinfo.model.Room;
 import co.edu.udea.salasinfo.persistence.ReservationDAO;
 import co.edu.udea.salasinfo.repository.ReservationRepository;
+import co.edu.udea.salasinfo.utils.enums.RStatus;
 import co.edu.udea.salasinfo.utils.enums.ReservationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -38,8 +39,8 @@ public class ReservationJPA implements ReservationDAO {
     }
 
     @Override
-    public boolean existsByStartsAtAndRoomId(LocalDateTime startsAt, Room roomId) {
-        return reservationRepository.existsByStartsAtAndRoom(startsAt, roomId);
+    public boolean existsByStartsAtAndRoomAndReservationState_StateNot(LocalDateTime startsAt, Room roomId, RStatus state) {
+        return reservationRepository.existsByStartsAtAndRoomAndReservationState_StateNot(startsAt, roomId, state);
     }
 
     @Override
@@ -65,4 +66,6 @@ public class ReservationJPA implements ReservationDAO {
     public List<Reservation> findByUserId(String userId){
         return reservationRepository.findByUserId(userId);
     }
+
+
 }

@@ -20,8 +20,15 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static co.edu.udea.salasinfo.utils.Functions.generateDailySchedule;
+import static co.edu.udea.salasinfo.utils.Functions.isSameDay;
 
 /**
  * It's the rooms data accessor, which saves and retrieves rooms
@@ -135,13 +142,15 @@ public class RoomServiceImpl implements RoomService {
         if (roomRequest.getRestrictionIds() != null) {
             List<Restriction> restrictionsList = restrictionDAO.findAllById(roomRequest.getRestrictionIds());
             Room finalRoom = room;
-            room.setRestrictions(restrictionsList.stream()
-                    .map(restriction -> {
-                        RoomRestriction roomRestriction = new RoomRestriction();
-                        roomRestriction.setRoom(finalRoom);
-                        roomRestriction.setRestriction(restriction);
-                        return roomRestriction;
-                    }).toList()
+            room.setRestrictions(
+                    restrictionsList.stream()
+                            .map(restriction -> {
+                                RoomRestriction roomRestriction = new RoomRestriction();
+                                roomRestriction.setRoom(finalRoom);
+                                roomRestriction.setRestriction(restriction);
+                                return roomRestriction;
+                            })
+                            .collect(Collectors.toCollection(ArrayList::new))  // <-- Crea una ArrayList mutable
             );
         }
 
@@ -183,7 +192,11 @@ public class RoomServiceImpl implements RoomService {
 
         // Eliminar implementos antiguos
         if (foundRoom.getImplementsList() != null) {
-            roomImplementDAO.deleteAll(foundRoom.getImplementsList());
+            foundRoom.getImplementsList().clear();
+        }
+        else {
+            // Si la colección es nula, la inicializamos:
+            foundRoom.setImplementsList(new ArrayList<>());
         }
 
         // Actualizar implementos con estado
@@ -203,12 +216,16 @@ public class RoomServiceImpl implements RoomService {
                 roomImplementDAO.save(roomImplement);
                 roomImplementList.add(roomImplement);
             }
-            foundRoom.setImplementsList(roomImplementList);
+            foundRoom.getImplementsList().addAll(roomImplementList);
+
         }
 
         // Eliminar software antiguo
         if (foundRoom.getRoomApplications() != null) {
-            roomApplicationDAO.deleteAll(foundRoom.getRoomApplications());
+            foundRoom.getRoomApplications().clear();
+        }
+        else {
+            foundRoom.setRoomApplications(new ArrayList<>());
         }
 
         // Actualizar software con versión
@@ -228,23 +245,27 @@ public class RoomServiceImpl implements RoomService {
                 roomApplicationDAO.save(roomApplication);
                 roomApplicationList.add(roomApplication);
             }
-            foundRoom.setRoomApplications(roomApplicationList);
+            foundRoom.getRoomApplications().addAll(roomApplicationList);
         }
 
         // Eliminar restricciones antiguas
-        roomRestrictionDAO.deleteAllByRoomId(foundRoom.getId());
-        foundRoom.getRestrictions().clear();
+        if (foundRoom.getRestrictions() != null) {
+            foundRoom.getRestrictions().clear();
+        } else {
+            foundRoom.setRestrictions(new ArrayList<>());
+        }
 
         // Actualizar restricciones
         if (roomRequest.getRestrictionIds() != null) {
             List<Restriction> restrictionsList = restrictionDAO.findAllById(roomRequest.getRestrictionIds());
-            foundRoom.setRestrictions(restrictionsList.stream()
+            List<RoomRestriction> newRestrictions = restrictionsList.stream()
                     .map(restriction -> {
                         RoomRestriction roomRestriction = new RoomRestriction();
                         roomRestriction.setRoom(foundRoom);
                         roomRestriction.setRestriction(restriction);
                         return roomRestriction;
-                    }).toList());
+                    }).collect(Collectors.toCollection(ArrayList::new));
+            foundRoom.getRestrictions().addAll(newRestrictions);// <-- Crea una ArrayList mutable;
         }
 
         // Guardar los cambios
@@ -302,13 +323,15 @@ public class RoomServiceImpl implements RoomService {
      * @return A list of free rooms at the given time.
      */
     @Override
-    public List<RoomResponse> findFreeAt(LocalDateTime date) {
+    public List<RoomResponse> findFreeAt(LocalDateTime start, LocalDateTime end) {
+        log.debug("START TIME: {}", start);
+        log.debug("END TIME: {}", end);
         List<Reservation> reservations = reservationDAO.findAll();
         List<Room> occupiedReservations = reservations.stream()
                 .filter(reservation -> reservation.getReservationState().getState() == RStatus.ACCEPTED) // Accepted reservations
                 .filter(reservation -> { // Reservations at that specific time
-                    if (reservation.getStartsAt().isEqual(date)) return true;
-                    return date.isAfter(reservation.getStartsAt()) && date.isBefore(reservation.getEndsAt());
+                    if (reservation.getStartsAt().isEqual(start) && reservation.getStartsAt().isEqual(end)) return true;
+                    return reservation.getStartsAt().isBefore(end) && reservation.getEndsAt().isAfter(start);
                 })
                 .map(Reservation::getRoom) // Occupied room
                 .toList();
@@ -328,84 +351,70 @@ public class RoomServiceImpl implements RoomService {
 
 
     @Override
-    public FreeRoomScheduleResponse findFreeRoomSchedule(Long id, LocalDate selectedDate) {
+    public List<FreeScheduleResponse> findAvailableStartTimes(Long id, LocalDate selectedDate) {
         Room foundRoom = roomDAO.findById(id);
 
-        // Obtener las reservas aceptadas para la fecha
+        // Filtrar reservas aceptadas o pendientes para la fecha seleccionada
         List<Reservation> reservations = foundRoom.getReservations().stream()
-                .filter(reservation -> reservation.getReservationState().getState().equals(RStatus.ACCEPTED) | reservation.getReservationState().getState().equals(RStatus.PENDING))
-                .filter(reservation -> isSameDay(reservation.getStartsAt(), selectedDate))
+                .filter(reservation ->
+                        (reservation.getReservationState().getState().equals(RStatus.ACCEPTED)
+                                || reservation.getReservationState().getState().equals(RStatus.PENDING))
+                                && isSameDay(reservation.getStartsAt(), selectedDate))
                 .toList();
 
-        // Generar horario base
+        // Generar el horario base
         List<LocalTime> availableHours = generateDailySchedule();
 
-        // Copias para calcular horarios de inicio y de fin
+        // Crear copia para las horas de inicio
         List<LocalTime> freeStartTimes = new ArrayList<>(availableHours);
-        List<LocalTime> freeEndTimes = new ArrayList<>(availableHours);
 
-        // Excluir horas reservadas
+        // Eliminar de freeStartTimes las horas que caen dentro de algún intervalo reservado
         for (Reservation reservation : reservations) {
-            LocalTime reservationStart = reservation.getStartsAt().toLocalTime();
-            LocalTime reservationEnd = reservation.getEndsAt().toLocalTime();
-            log.debug("Start: {} End: {}", reservationStart, reservationEnd);
-            // Remover todas las horas que caen dentro de la reserva
-            availableHours.removeIf(hour ->
-                    !hour.isBefore(reservationStart) && hour.isBefore(reservationEnd));
-
-            // Horarios de inicio: eliminar las horas que se encuentren en el intervalo [resStart, resEnd)
-            freeStartTimes.removeIf(hour -> !hour.isBefore(reservationStart) && hour.isBefore(reservationEnd));
-
-            // Horarios de fin: eliminar las horas que estén estrictamente dentro del intervalo (resStart, resEnd)
-            freeEndTimes.removeIf(hour -> hour.isAfter(reservationStart) && hour.isBefore(reservationEnd));
+            LocalTime resStart = reservation.getStartsAt().toLocalTime();
+            LocalTime resEnd = reservation.getEndsAt().toLocalTime();
+            freeStartTimes.removeIf(hour -> !hour.isBefore(resStart) && hour.isBefore(resEnd));
         }
 
-        List<FreeScheduleResponse> startResponses = freeStartTimes.stream()
-                .map(FreeScheduleResponse::new)
+        // Formatear las horas disponibles
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return freeStartTimes.stream()
+                .map(time -> new FreeScheduleResponse(time.format(formatter)))
                 .toList();
-        List<FreeScheduleResponse> endResponses = freeEndTimes.stream()
-                .map(FreeScheduleResponse::new)
+    }
+
+
+    @Override
+    public List<FreeScheduleResponse> findAvailableEndTimes(Long id, LocalDate selectedDate, LocalTime selectedStartTime) {
+        Room foundRoom = roomDAO.findById(id);
+        List<Reservation> reservations = foundRoom.getReservations().stream()
+                .filter(reservation ->
+                        (reservation.getReservationState().getState().equals(RStatus.ACCEPTED) ||
+                                reservation.getReservationState().getState().equals(RStatus.PENDING)) &&
+                                isSameDay(reservation.getStartsAt(), selectedDate))
+                .sorted(Comparator.comparing(Reservation::getStartsAt))
                 .toList();
 
-        return new FreeRoomScheduleResponse(startResponses, endResponses);
-    }
+        // Hallar el primer conflicto (la próxima reserva) que inicie después del start seleccionado.
+        Optional<LocalTime> nextReservationStart = reservations.stream()
+                .map(res -> res.getStartsAt().toLocalTime())
+                .filter(time -> time.isAfter(selectedStartTime) || time.equals(selectedStartTime))
+                .min(Comparator.naturalOrder());
 
-    // Método auxiliar para verificar si la reserva es en la misma fecha seleccionada
-    private boolean isSameDay(LocalDateTime dateTime, LocalDate selectedDate) {
-        return dateTime.toLocalDate().equals(selectedDate);
-    }
+        // Determinar el límite máximo para la reserva (la hora de fin no puede exceder la siguiente reserva o el final del horario base)
+        LocalTime maxEndTime = nextReservationStart.orElse(LocalTime.of(22, 0));
 
-    // Método para generar el horario base de 6 a.m. a 9 p.m.
-    private List<LocalTime> generateDailySchedule() {
-        List<LocalTime> schedule = new ArrayList<>();
-        LocalTime startTime = LocalTime.of(6, 0);
-        LocalTime endTime = LocalTime.of(21, 0);
+        // Generar el horario base
+        List<LocalTime> baseSchedule = generateDailySchedule();
 
-        while (!startTime.isAfter(endTime)) {
-            schedule.add(startTime);
-            startTime = startTime.plusHours(1);
-        }
-        return schedule;
-    }
+        // Filtrar las horas de fin: deben ser mayores que el start seleccionado y menores o iguales al límite máximo.
+        List<LocalTime> availableEndTimes = baseSchedule.stream()
+                .filter(time -> time.isAfter(selectedStartTime) && (time.equals(maxEndTime) || time.isBefore(maxEndTime)))
+                .toList();
 
-
-    // Método para excluir las horas reservadas del horario base
-    private List<LocalTime> excludeReservedHours(List<LocalTime> fullSchedule, List<Reservation> reservations) {
-        List<LocalTime> availableHours = new ArrayList<>(fullSchedule);
-
-        for (Reservation reservation : reservations) {
-            LocalTime start = reservation.getStartsAt().toLocalTime();
-            LocalTime end = reservation.getEndsAt().toLocalTime();
-
-            // Remover cada hora dentro del intervalo reservado
-            LocalTime time = start;
-            while (!time.isAfter(end.minusHours(1))) {
-                availableHours.remove(time);
-                time = time.plusHours(1);
-            }
-        }
-
-        return availableHours;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return availableEndTimes.stream()
+                .map(time -> new FreeScheduleResponse(time.format(formatter)))
+                .toList();
     }
 
 }

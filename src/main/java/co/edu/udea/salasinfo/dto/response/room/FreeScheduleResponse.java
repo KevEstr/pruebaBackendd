@@ -13,5 +13,5 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class FreeScheduleResponse {
 
-    private LocalTime hour;
+    private String hour;
 }
