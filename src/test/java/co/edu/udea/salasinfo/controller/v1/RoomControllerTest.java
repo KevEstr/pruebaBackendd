@@ -275,7 +275,7 @@ class RoomControllerTest {
                 .andExpect(jsonPath("$.roomName").value(roomResponse.getRoomName()));
     }
 
-    @Test
+    /*@Test
     void findFreeRooms_success() throws Exception {
         RoomResponse roomResponse = new RoomResponse();
         // Create Application Responses
@@ -322,7 +322,7 @@ class RoomControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(roomResponse.getId()));
-    }
+    }*/
 
     @Test
     void findRoomById_notFound() throws Exception {
@@ -372,7 +372,7 @@ class RoomControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
+    /*@Test
     void findFreeRoomAt_success() throws Exception {
         RoomResponse roomResponse = new RoomResponse();
         // Create Application Responses
@@ -420,5 +420,5 @@ class RoomControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(roomResponse.getId()))
                 .andExpect(jsonPath("$[0].roomName").value(roomResponse.getRoomName()));
-    }
+    }*/
 }

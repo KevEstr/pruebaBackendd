@@ -6,6 +6,7 @@ import co.edu.udea.salasinfo.dto.response.room.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -17,8 +18,8 @@ public interface RoomService {
     SpecificRoomResponse createRoom(RoomRequest room) ;
     SpecificRoomResponse updateRoom(Long id, RoomRequest room) ;
     RoomResponse deleteRoom(Long id) ;
-    List<RoomResponse> findFreeAt(LocalDateTime date);
+    List<RoomResponse> findFreeAt(LocalDateTime start, LocalDateTime end);
     List<RoomScheduleResponse> findRoomSchedule(Long id);
-
-    FreeRoomScheduleResponse findFreeRoomSchedule(Long id, LocalDate selectedDate);
+    List<FreeScheduleResponse> findAvailableEndTimes(Long id, LocalDate selectedDate, LocalTime selectedStartTime);
+    List<FreeScheduleResponse> findAvailableStartTimes(Long id, LocalDate selectedDate);
 }
